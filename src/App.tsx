@@ -1,4 +1,11 @@
 import { Routes, Route, Link } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import { ResetStyle, GlobalStyle } from 'components/globalStyle';
+import { theme } from 'components/variables';
+
+// router
+import Header from 'components/header/Header';
+import Login from 'components/login/Login';
 
 function Home() {
   return (
@@ -8,21 +15,7 @@ function Home() {
         <p>You can do this, I believe in you.</p>
       </main>
       <nav>
-        <Link to="/about">About</Link>
-      </nav>
-    </>
-  );
-}
-
-function About() {
-  return (
-    <>
-      <main>
-        <h2>Who are we?</h2>
-        <p>Lorem, ipsum.</p>
-      </main>
-      <nav>
-        <Link to="/">Home</Link>
+        <Link to="/login">Ligin</Link>
       </nav>
     </>
   );
@@ -31,11 +24,15 @@ function About() {
 function App() {
   return (
     <div className="App">
-      <h1>Welcome to React Router!</h1>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="about" element={<About />} />
-      </Routes>
+      <ResetStyle />
+      <ThemeProvider theme={theme}>
+        <GlobalStyle />
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="login" element={<Login />} />
+        </Routes>
+      </ThemeProvider>
     </div>
   );
 }
