@@ -5,7 +5,7 @@ import { theme } from 'components/variables';
 
 // router
 import Header from 'components/header/Header';
-import Login from 'components/login/Login';
+import Login from 'components/user/UserCard';
 
 function Home() {
   return (
@@ -28,10 +28,13 @@ function App() {
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="login" element={<Login />} />
-        </Routes>
+        <div className="main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login isLogin={true} />} />
+            <Route path="/register" element={<Login isLogin={false} />} />
+          </Routes>
+        </div>
       </ThemeProvider>
     </div>
   );

@@ -12,7 +12,7 @@ export const theme = {
   black: '#1c1c1c',
   opBlack: 'rgba(0, 0, 0, 0.9)',
   opLightBlack: 'rgba(0, 0, 0, 0.3)',
-  opWhite: 'rgba(255, 255, 255, 0.9)',
+  opWhite: 'rgba(255, 255, 255, 0.8)',
   yellow: '#fffdd0',
   darkYellow: '#fef263',
   starYellow: '#fef263',
