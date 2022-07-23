@@ -90,4 +90,12 @@ html, body {
     margin-top: 50px;
   }
 }
+
+.container {
+  width: 100%;
+  max-width: 1240px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin: auto;
+}
 `;

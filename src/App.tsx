@@ -1,25 +1,12 @@
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { ResetStyle, GlobalStyle } from 'components/globalStyle';
 import { theme } from 'components/variables';
 
 // router
 import Header from 'components/header/Header';
-import Login from 'components/user/UserCard';
-
-function Home() {
-  return (
-    <>
-      <main>
-        <h2>Welcome to the homepage!</h2>
-        <p>You can do this, I believe in you.</p>
-      </main>
-      <nav>
-        <Link to="/login">Ligin</Link>
-      </nav>
-    </>
-  );
-}
+import UserCard from 'components/user/UserCard'; // 登入註冊頁面
+import Home from 'components/home/home';
 
 function App() {
   return (
@@ -31,8 +18,8 @@ function App() {
         <div className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login isLogin={true} />} />
-            <Route path="/register" element={<Login isLogin={false} />} />
+            <Route path="/login" element={<UserCard isLogin={true} />} />
+            <Route path="/register" element={<UserCard isLogin={false} />} />
           </Routes>
         </div>
       </ThemeProvider>
