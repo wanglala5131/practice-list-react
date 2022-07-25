@@ -159,14 +159,25 @@ const SubcategoryController = styled.div`
 `;
 
 type Props = {
-  categories: CategoriesType;
-  subcategories: SubCategoriesType;
+  categories: CategoriesType[];
+  subcategories: SubCategoriesType[];
   setCurrentSub: (value: number[]) => void;
   currentSub: number[];
+  isLike: boolean;
+  setIsLike: (value: boolean) => void;
+  setKeyword: (value: string) => void;
 };
 
 export default function searchBar(props: Props) {
-  const { categories, subcategories, setCurrentSub, currentSub } = props;
+  const {
+    categories,
+    subcategories,
+    setCurrentSub,
+    currentSub,
+    isLike,
+    setIsLike,
+    setKeyword,
+  } = props;
   const [currentCate, setCurrentCate] = useState<string>('');
   const [currentShowSub, setCurrentShowSub] = useState<number[]>([]);
 
@@ -231,12 +242,22 @@ export default function searchBar(props: Props) {
 
         <CardsSearchForm className="cards-search-form">
           <SearchItem>
-            <input type="text" placeholder="搜尋關鍵字" />
+            <input
+              onChange={e => setKeyword(e.target.value)}
+              type="text"
+              placeholder="搜尋關鍵字"
+            />
           </SearchItem>
 
           <SearchItem className="one-line">
             <CheckboxLabel>
-              <input type="checkbox" className="like" id="like" />
+              <input
+                type="checkbox"
+                className="like"
+                id="like"
+                checked={isLike}
+                onChange={e => setIsLike(e.target.checked)}
+              />
               <label htmlFor="like">只顯示星號項目</label>
             </CheckboxLabel>
             <CheckboxLabel className="has-gap">

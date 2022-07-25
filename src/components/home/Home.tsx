@@ -1,16 +1,36 @@
 import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+
 import * as Data from 'components/home/home.type';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/index-page.jpeg';
 import SearchBar from 'components/home/SearchBar';
+import Item from 'components/home/Item';
 
 // fake data
 import {
-  // items as OriItems,
+  items as OriItems,
   categories as OriCate,
   subcategories as OriSub,
 } from 'assets/fake-data/fake';
+
+const CardsNumTxt = styled.p`
+  margin: 20px 0;
+  text-align: center;
+  font-size: 20px;
+`;
+
+const CardsWrapper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 270px);
+  grid-gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 30px;
+  padding-bottom: 50px;
+  min-height: 320px;
+`;
 
 const pageData = {
   bannerImg,
@@ -28,25 +48,45 @@ const pageData = {
 
 export default function Home() {
   // 原始資料
-  const [categories, setCategories] = useState<Data.CategoriesType>([]);
-  const [subcategories, setSubcategories] = useState<Data.SubCategoriesType>(
+  const [categories, setCategories] = useState<Data.CategoriesType[]>([]);
+  const [subcategories, setSubcategories] = useState<Data.SubCategoriesType[]>(
     []
   );
-  // const [items, setItems] = useState<Data.ItemsType>([]);
+  const [items, setItems] = useState<Data.ItemsType>([]);
 
-  // subcategories
+  // filter
+  const [keyword, setKeyword] = useState<string>('');
   const [currentSub, setCurrentSub] = useState<number[]>([]);
+  const [isLike, setIsLike] = useState<boolean>(false);
+  const [currentShowItems, setCurrentShowItems] = useState<Data.ItemsType>([]);
 
   // 模擬 api
   useEffect(() => {
     setTimeout(() => {
       setCategories(OriCate);
       setSubcategories(OriSub);
-      // setItems(OriItems);
+      setItems(OriItems);
+      setCurrentShowItems(OriItems);
     }, 500);
   }, []);
 
-  // console.log(items);
+  useEffect(() => {
+    let oriItemsArr: Data.ItemsType = items;
+    if (isLike) {
+      oriItemsArr = oriItemsArr.filter(item => item.isLiked);
+    }
+
+    if (keyword) {
+      oriItemsArr = oriItemsArr.filter(item => item.name.includes(keyword));
+    }
+
+    oriItemsArr = oriItemsArr.filter(item =>
+      item.Subcategories.some(subcategory =>
+        currentSub.includes(subcategory.id)
+      )
+    );
+    setCurrentShowItems(oriItemsArr);
+  }, [currentSub, isLike, keyword]);
 
   return (
     <>
@@ -60,7 +100,20 @@ export default function Home() {
         subcategories={subcategories}
         setCurrentSub={setCurrentSub}
         currentSub={currentSub}
+        isLike={isLike}
+        setIsLike={setIsLike}
+        setKeyword={setKeyword}
       />
+      <div className="container">
+        <CardsNumTxt className="cards-num">
+          共有 {currentShowItems.length} 個結果
+        </CardsNumTxt>
+        <CardsWrapper>
+          {currentShowItems.map(item => (
+            <Item key={item.id} item={item} />
+          ))}
+        </CardsWrapper>
+      </div>
     </>
   );
 }
