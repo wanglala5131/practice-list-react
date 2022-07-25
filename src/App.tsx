@@ -6,7 +6,7 @@ import { theme } from 'components/variables';
 // router
 import Header from 'components/header/Header';
 import UserCard from 'components/user/UserCard'; // 登入註冊頁面
-import Home from 'components/home/home';
+import Home from 'components/home/Home';
 
 function App() {
   return (
