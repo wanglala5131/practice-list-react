@@ -22,3 +22,16 @@ export const theme = {
 
 // RWD
 export const pad = '(min-width: 768px)';
+
+export const scrollType = `
+  &::-webkit-scrollbar {
+    border-radius: 20px;
+    width: 10px;
+    background-color: ${theme.lightLogoGreen};
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: ${theme.logoGreen};
+  }
+`;

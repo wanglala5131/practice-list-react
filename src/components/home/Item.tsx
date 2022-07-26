@@ -108,7 +108,6 @@ const CardFooter = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 3fr;
   grid-template-rows: auto;
-  // border-top: 4px solid ${props => props.theme.opBlack};
 
   &.close {
     grid-template-columns: 1fr 1fr;
@@ -119,11 +118,11 @@ const CardButton = styled.button`
   padding: 10px;
   font-weight: 700;
   font-size: 16px;
-  cursor: pointer;
 
   &.close,
   &.edit {
     background-color: ${props => props.theme.yellow};
+    cursor: pointer;
 
     &:hover {
       background-color: ${props => props.theme.darkYellow};
@@ -135,19 +134,21 @@ const CardButton = styled.button`
     background-color: ${props => props.theme.lightLogoGreen};
     border-radius: 0 0 5px 0;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: ${props => props.theme.logoGreen};
       transition: all 0.2s ease-out;
+      cursor: pointer;
     }
   }
 `;
 
 type Props = {
   item: ItemType;
+  isInCart: boolean;
 };
 
 export default function Item(props: Props) {
-  const { item } = props;
+  const { item, isInCart } = props;
   return (
     <Card>
       <CardHeader>
@@ -167,7 +168,9 @@ export default function Item(props: Props) {
       <CardFooter>
         <CardButton className="close">封存</CardButton>
         <CardButton className="edit">編輯</CardButton>
-        <CardButton className="cart">加到暫定菜單中</CardButton>
+        <CardButton className="cart" disabled={isInCart}>
+          {isInCart ? '已加進暫定菜單' : ' 加到暫定菜單中'}
+        </CardButton>
       </CardFooter>
     </Card>
   );

@@ -7,12 +7,15 @@ import Banner from 'components/Banner';
 import bannerImg from 'assets/image/index-page.jpeg';
 import SearchBar from 'components/home/SearchBar';
 import Item from 'components/home/Item';
+import Cart from './Cart';
 
 // fake data
 import {
   items as OriItems,
   categories as OriCate,
   subcategories as OriSub,
+  cartItems as OriCartItems,
+  cartItemsArr as OriCartItemsArr,
 } from 'assets/fake-data/fake';
 
 const CardsNumTxt = styled.p`
@@ -53,6 +56,8 @@ export default function Home() {
     []
   );
   const [items, setItems] = useState<Data.ItemsType>([]);
+  const [cartItems, setCartItems] = useState<Data.CartItem[]>([]);
+  const [cartItemsArr, setCartItemsArr] = useState<number[]>([]);
 
   // filter
   const [keyword, setKeyword] = useState<string>('');
@@ -67,6 +72,8 @@ export default function Home() {
       setSubcategories(OriSub);
       setItems(OriItems);
       setCurrentShowItems(OriItems);
+      setCartItems(OriCartItems);
+      setCartItemsArr(OriCartItemsArr);
     }, 500);
   }, []);
 
@@ -90,11 +97,14 @@ export default function Home() {
 
   return (
     <>
+      <Cart cartItems={cartItems} />
       <Banner
         bannerImg={pageData.bannerImg}
         title={pageData.title}
         buttons={pageData.buttons}
-      />
+        hasCart={true}
+      ></Banner>
+
       <SearchBar
         categories={categories}
         subcategories={subcategories}
@@ -110,7 +120,11 @@ export default function Home() {
         </CardsNumTxt>
         <CardsWrapper>
           {currentShowItems.map(item => (
-            <Item key={item.id} item={item} />
+            <Item
+              key={item.id}
+              item={item}
+              isInCart={cartItemsArr.includes(item.id)}
+            />
           ))}
         </CardsWrapper>
       </div>

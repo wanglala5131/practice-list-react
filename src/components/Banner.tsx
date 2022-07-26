@@ -33,6 +33,10 @@ const TitleBox = styled.div`
   padding-top: 30px;
   z-index: 2;
 
+  &.has-cart {
+    padding-top: 45px;
+  }
+
   @media ${pad} {
     padding-top: 80px;
   }
@@ -128,14 +132,15 @@ type Props = {
   bannerImg: string;
   title: string;
   buttons?: { name: string; url: string; class: string; type: string }[];
+  hasCart?: boolean;
 };
 
 export default function Banner(props: Props) {
-  const { bannerImg, title, buttons } = props;
+  const { bannerImg, title, buttons, hasCart } = props;
   return (
     <BannerContainer>
       <img src={bannerImg} alt="練習菜單banner" />
-      <TitleBox className="container">
+      <TitleBox className={`container ${hasCart ? 'has-cart' : ''}`}>
         <PageTitle>{title}</PageTitle>
         <PageLinks>
           {buttons?.map(item =>
