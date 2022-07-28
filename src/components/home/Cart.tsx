@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { pad, scrollType } from 'components/variables';
+import { pad, scrollStyle } from 'components/variables';
 import { ListAlt } from '@styled-icons/fa-solid';
 import { CartItem } from './home.type';
 
@@ -89,7 +89,7 @@ const Content = styled.div`
   transform-origin: left;
   transition: transform 0.2s ease-out;
 
-  ${scrollType}
+  ${scrollStyle}
 
   @media ${pad} {
     padding: 10px;

@@ -23,7 +23,7 @@ export const theme = {
 // RWD
 export const pad = '(min-width: 768px)';
 
-export const scrollType = `
+export const scrollStyle = `
   &::-webkit-scrollbar {
     border-radius: 20px;
     width: 10px;
@@ -34,4 +34,21 @@ export const scrollType = `
     border-radius: 10px;
     background-color: ${theme.logoGreen};
   }
+`;
+
+export const inputStyle = `
+  padding: 4px 7px;
+  font-size: 17px;
+  border: 1px solid ${theme.darkGray};
+  border-radius: 5px;
+`;
+
+export const buttonStyle = `
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 1px;
 `;

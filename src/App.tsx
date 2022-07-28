@@ -7,6 +7,7 @@ import { theme } from 'components/variables';
 import Header from 'components/header/Header';
 import UserCard from 'components/user/UserCard'; // 登入註冊頁面
 import Home from 'components/home/Home';
+import Create from 'components/create/Create';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<UserCard isLogin={true} />} />
             <Route path="/register" element={<UserCard isLogin={false} />} />
+            <Route path="/create" element={<Create />} />
           </Routes>
         </div>
       </ThemeProvider>
