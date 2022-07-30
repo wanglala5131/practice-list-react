@@ -21,7 +21,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<UserCard isLogin={true} />} />
             <Route path="/register" element={<UserCard isLogin={false} />} />
-            <Route path="/create" element={<Create />} />
+            <Route path="/create" element={<Create isCreate={true} />} />
+            <Route path="/edit/:id" element={<Create isCreate={false} />} />
           </Routes>
         </div>
       </ThemeProvider>

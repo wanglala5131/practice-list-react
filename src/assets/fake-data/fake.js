@@ -7000,3 +7000,66 @@ export const cartItems = [
 ];
 
 export const cartItemsArr = [51, 61, 101];
+
+export const item = {
+  id: 41,
+  name: '隔網墊球',
+  description:
+    '兩人一組，輪流送球。送球的人一球送長一球送短（長球過網，短球不過網），接球的人則重心放低在網子底下移動進行接球。',
+  image: 'https://i.imgur.com/ienOaxm.png',
+  userId: 31,
+  categoryId: 21,
+  limit: '需要網子(建議不要男網，太輕鬆了！！！)',
+  isClosed: false,
+  isLiked: false,
+  createdAt: '2020-12-20T04:40:43.000Z',
+  updatedAt: '2020-12-23T15:32:31.000Z',
+  CategoryId: 21,
+  UserId: 31,
+  Category: {
+    id: 21,
+    name: '排球',
+    userId: 31,
+    createdAt: '2020-12-20T04:34:48.000Z',
+    updatedAt: '2020-12-20T04:34:48.000Z',
+    UserId: 31,
+  },
+  Subcategories: [
+    {
+      id: 41,
+      name: '接球',
+      userId: 31,
+      categoryId: 21,
+      createdAt: '2020-12-20T04:39:11.000Z',
+      updatedAt: '2020-12-20T04:39:11.000Z',
+      CategoryId: 21,
+      UserId: 31,
+      ItemType: {
+        subcategoryId: 41,
+        itemId: 41,
+        createdAt: '2020-12-20T04:40:43.000Z',
+        updatedAt: '2020-12-20T04:40:43.000Z',
+        ItemId: 41,
+        SubcategoryId: 41,
+      },
+    },
+    {
+      id: 51,
+      name: '跑動',
+      userId: 31,
+      categoryId: 21,
+      createdAt: '2020-12-20T04:39:24.000Z',
+      updatedAt: '2020-12-20T04:39:24.000Z',
+      CategoryId: 21,
+      UserId: 31,
+      ItemType: {
+        subcategoryId: 51,
+        itemId: 41,
+        createdAt: '2020-12-20T04:40:43.000Z',
+        updatedAt: '2020-12-20T04:40:43.000Z',
+        ItemId: 41,
+        SubcategoryId: 51,
+      },
+    },
+  ],
+};

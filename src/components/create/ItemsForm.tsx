@@ -6,6 +6,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { object, string, number, array } from 'yup';
 
 import { SubCategoriesType, CategoriesType } from 'components/data.type';
+import { formDataType } from './form.type';
 
 // fake
 import { categories, subcategories } from 'assets/fake-data/fake';
@@ -147,6 +148,7 @@ const FormButton = styled.div`
     margin-top: 10px;
     color: ${props => props.theme.black};
     font-size: 15px;
+    cursor: pointer;
 
     @media ${pad} {
       font-size: 17px;
@@ -168,15 +170,6 @@ const FormButton = styled.div`
   }
 `;
 
-const initialValues = {
-  name: '',
-  category: '',
-  subcategories: '',
-  limit: '',
-  description: '',
-  file: undefined,
-};
-
 const validationSchema = {
   name: string().required('此欄位為必填').max(255, '最多 255 字'),
   category: number().required('此欄位為必填'),
@@ -185,14 +178,20 @@ const validationSchema = {
   description: string().max(255, '最多 255 字'),
 };
 
-export default function ItemsForm() {
+type Props = {
+  item: formDataType;
+  isCreate: boolean;
+};
+
+export default function ItemsForm(props: Props) {
+  const { item, isCreate } = props;
   const [oriCategories, setOriCategories] = useState<CategoriesType[]>([]);
   const [oriSubcategories, setOriSubcategories] = useState<SubCategoriesType[]>(
     []
   );
   const [category, setCategory] = useState<number>(0);
 
-  const [currentSub, setCurrentSub] = useState<SubCategoriesType[]>([]);
+  const [currentShowSub, setCurrentShowSub] = useState<SubCategoriesType[]>([]);
   const [currentImg, setCurrentImg] = useState<File>();
   const [currentImgUrl, setCurrentImgUrl] = useState<string>('');
 
@@ -200,8 +199,36 @@ export default function ItemsForm() {
     setTimeout(() => {
       setOriCategories(categories);
       setOriSubcategories(subcategories);
-    }, 1000);
+    }, 800);
   }, []);
+
+  useEffect(() => {
+    setCategory(item.category);
+
+    if (item.file) {
+      setCurrentImgUrl(item.file);
+    }
+
+    //  oriSubcategories 有值才 set
+    if (oriSubcategories.length > 0 && currentShowSub.length === 0) {
+      setCurrentShowSub(
+        oriSubcategories.filter(
+          subcategory => subcategory.CategoryId === item.category
+        )
+      );
+    }
+  }, [item.category]);
+
+  // 防止 oriSubcategories 較晚拿到值
+  useEffect(() => {
+    if (currentShowSub.length === 0) {
+      setCurrentShowSub(
+        oriSubcategories.filter(
+          subcategory => subcategory.CategoryId === item.category
+        )
+      );
+    }
+  }, [oriSubcategories]);
 
   type setFieldValueType = (
     field: string,
@@ -209,6 +236,7 @@ export default function ItemsForm() {
     shouldValidate?: boolean | undefined
   ) => void;
 
+  // 修改 category
   const changeCategory = (
     categoryId: number,
     setFieldValue: setFieldValueType
@@ -216,12 +244,14 @@ export default function ItemsForm() {
     setFieldValue('category', categoryId);
     setFieldValue('subcategories', []);
     setCategory(categoryId);
-    setCurrentSub(
+  };
+  useEffect(() => {
+    setCurrentShowSub(
       oriSubcategories.filter(
-        subcategory => subcategory.CategoryId === categoryId
+        subcategory => subcategory.CategoryId === category
       )
     );
-  };
+  }, [category]);
 
   const uploadImg = (imgFile: File) => {
     const imageURL = window.URL.createObjectURL(imgFile);
@@ -231,7 +261,7 @@ export default function ItemsForm() {
 
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={item}
       validationSchema={object(validationSchema)}
       onSubmit={(values, { setSubmitting }) => {
         setTimeout(() => {
@@ -245,7 +275,7 @@ export default function ItemsForm() {
       {({ values, setFieldValue }) => (
         <Form>
           <FormContainer>
-            <h2>新增項目</h2>
+            <h2>{isCreate ? '新增' : '編輯'}項目</h2>
             <InputBox>
               <ItemLabel htmlFor="name" className="required">
                 項目名稱
@@ -287,7 +317,7 @@ export default function ItemsForm() {
             <InputBox>
               <ItemLabel className="required">運動類別</ItemLabel>
               <SubcategriesWrapper>
-                {currentSub.map(subcategory => (
+                {currentShowSub.map(subcategory => (
                   <Subcategories key={subcategory.id}>
                     <Field
                       type="checkbox"
@@ -345,7 +375,6 @@ export default function ItemsForm() {
                   }
                 }}
               />
-
               {currentImgUrl && (
                 <ImgBox>
                   <img src={currentImgUrl} />
@@ -356,7 +385,7 @@ export default function ItemsForm() {
               <Link className="back" to="/">
                 回首頁
               </Link>
-              <button className="delete">只刪除圖片</button>
+              {item.file && <button className="delete">只刪除圖片</button>}
               <button className="submit" type="submit">
                 送出表單
               </button>
