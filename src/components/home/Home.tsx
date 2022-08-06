@@ -49,8 +49,17 @@ const pageData = {
       url: '/create',
       class: 'default add-link',
       type: 'link',
+      action: 'create',
+      disabled: false,
     },
-    { name: '查看封存項目', url: 'close', class: 'default', type: 'button' },
+    {
+      name: '查看封存項目',
+      url: 'close',
+      class: 'default',
+      type: 'button',
+      action: 'go-close',
+      disabled: false,
+    },
   ],
 };
 

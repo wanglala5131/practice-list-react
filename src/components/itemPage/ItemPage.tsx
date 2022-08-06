@@ -13,7 +13,7 @@ import bannerImg from 'assets/image/item-page.jpeg';
 import {
   item as OriItem,
   cartItems as OriCartItems,
-  //   cartItemsArr as OriCartItemsArr,
+  cartItemsArr as OriCartItemsArr,
 } from 'assets/fake-data/fake';
 
 const ItemSection = styled.section`
@@ -95,33 +95,101 @@ export default function Item() {
         url: '/',
         class: 'go-back',
         type: 'link',
+        action: 'go-back',
+        disabled: false,
       },
-      { name: '加上星號', url: '', class: 'default', type: 'button' },
-      { name: '編輯', url: `/edit/${id}`, class: 'default', type: 'link' },
-      { name: '加到暫定菜單', url: '', class: 'default', type: 'button' },
-      { name: '封存', url: '', class: 'close', type: 'button' },
+      {
+        name: '加上星號',
+        url: '',
+        class: 'default',
+        type: 'button',
+        action: 'add-star',
+        disabled: false,
+      },
+      {
+        name: '編輯',
+        url: `/edit/${id}`,
+        class: 'default',
+        type: 'link',
+        action: 'edit',
+        disabled: false,
+      },
+      {
+        name: '加到暫定菜單',
+        url: '',
+        class: 'default',
+        type: 'button',
+        action: 'add-temp',
+        disabled: false,
+      },
+      {
+        name: '封存',
+        url: '',
+        class: 'close',
+        type: 'button',
+        action: 'close',
+        disabled: false,
+      },
     ],
   };
 
   const [item, setItem] = useState<ItemType>();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  // const [cartItemsArr, setCartItemsArr] = useState<number[]>([]);
+  const [cartItemsArr, setCartItemsArr] = useState<number[]>([]);
+  const [pageButtons, setPageButtons] = useState(pageData.buttons);
 
   // 模擬 api
   useEffect(() => {
     setTimeout(() => {
       setItem(OriItem);
       setCartItems(OriCartItems);
-      //   setCartItemsArr(OriCartItemsArr);
+      setCartItemsArr(OriCartItemsArr);
     }, 500);
   }, []);
+
+  useEffect(() => {
+    if (item) {
+      setPageButtons(
+        pageButtons.map(button => {
+          if (button.action === 'close') {
+            button.name = item.isClosed ? '解除封存' : '封存';
+          }
+
+          if (button.action === 'add-temp') {
+            button.disabled = item.isClosed;
+          }
+          return button;
+        })
+      );
+    }
+  }, [item?.isClosed]);
+
+  useEffect(() => {
+    if (item) {
+      setPageButtons(
+        pageButtons.map(button => {
+          if (button.action === 'add-temp') {
+            button.name = cartItemsArr.includes(item.id)
+              ? '自暫定清單移除'
+              : '加入暫定清單';
+          }
+
+          if (button.action === 'close') {
+            button.disabled = cartItemsArr.includes(item.id);
+          }
+          return button;
+        })
+      );
+    }
+  }, [cartItemsArr]);
+
   return (
     <>
       <Cart cartItems={cartItems} />
       <Banner
         bannerImg={pageData.bannerImg}
         title={item?.name || '---'}
-        buttons={pageData.buttons}
+        buttons={pageButtons}
         hasCart={true}
       ></Banner>
       {item && (

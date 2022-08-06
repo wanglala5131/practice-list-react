@@ -82,7 +82,6 @@ const PageLinks = styled.div`
     font-weight: 700;
     font-size: 16px;
     line-height: 16px;
-    cursor: pointer;
 
     @media ${pad} {
       background-color: rgba(0, 0, 0, 0.8);
@@ -90,12 +89,22 @@ const PageLinks = styled.div`
       line-height: 20px;
     }
 
-    &:hover {
+    &:not(:disabled):hover {
       transition: all 0.2s ease-out;
       color: ${props => props.theme.white};
+      cursor: pointer;
 
       @media ${pad} {
         color: ${props => props.theme.opWhite};
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+
+      @media ${pad} {
+        opacity: 1;
+        filter: brightness(0.6);
       }
     }
 
@@ -111,7 +120,7 @@ const PageLinks = styled.div`
         color: ${props => props.theme.opWhite};
       }
 
-      &:hover {
+      &:not(:disabled):hover {
         background-color: ${props => props.theme.logoGreen};
         color: ${props => props.theme.white};
       }
@@ -169,7 +178,7 @@ const PageLinks = styled.div`
         color: ${props => props.theme.red};
       }
 
-      &:hover {
+      &:not(:disabled):hover {
         background-color: ${props => props.theme.red};
         color: ${props => props.theme.white};
       }
@@ -180,7 +189,14 @@ const PageLinks = styled.div`
 type Props = {
   bannerImg: string;
   title: string;
-  buttons?: { name: string; url: string; class: string; type: string }[];
+  buttons?: {
+    name: string;
+    url: string;
+    class: string;
+    type: string;
+    action: string;
+    disabled: boolean;
+  }[];
   hasCart?: boolean;
 };
 
@@ -194,11 +210,15 @@ export default function Banner(props: Props) {
         <PageLinks>
           {buttons?.map(item =>
             item.type === 'link' ? (
-              <Link key={item.url} to={item.url} className={item.class}>
+              <Link key={item.action} to={item.url} className={item.class}>
                 {item.name}
               </Link>
             ) : (
-              <button key={item.url} className={item.class}>
+              <button
+                key={item.action}
+                className={item.class}
+                disabled={item.disabled}
+              >
                 {item.name}
               </button>
             )
