@@ -115,9 +115,22 @@ const CardFooter = styled.div`
 `;
 
 const CardButton = styled.button`
+  position: relative;
   padding: 10px;
   font-weight: 700;
   font-size: 16px;
+
+  a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: black;
+  }
 
   &.close,
   &.edit {
@@ -144,17 +157,18 @@ const CardButton = styled.button`
 
 type Props = {
   item: ItemType;
-  isInCart: boolean;
+  isInCart?: boolean;
+  isInClosePage?: boolean;
 };
 
 export default function Item(props: Props) {
-  const { item, isInCart } = props;
+  const { item, isInCart = false, isInClosePage = false } = props;
   return (
     <Card>
       <CardHeader>
         <Link className="card-link" to={`/${item.id}`}></Link>
         <CardCategory>{item.Category.name}</CardCategory>
-        <CardStar className={item.isLiked ? 'active' : ''} />
+        {isInClosePage || <CardStar className={item.isLiked ? 'active' : ''} />}
         <img alt="card-img" src={item.image || defaultImage} />
         <CardTitle>
           <h3>{item.name}</h3>
@@ -165,12 +179,20 @@ export default function Item(props: Props) {
           </CardSubcategories>
         </CardTitle>
       </CardHeader>
-      <CardFooter>
-        <CardButton className="close">封存</CardButton>
-        <CardButton className="edit">編輯</CardButton>
-        <CardButton className="cart" disabled={isInCart}>
-          {isInCart ? '已加進暫定菜單' : ' 加到暫定菜單中'}
+      <CardFooter className={isInClosePage ? 'close' : ''}>
+        <CardButton className="close">
+          {isInClosePage ? '解除封存' : '封存'}
         </CardButton>
+
+        <CardButton className="edit">
+          <Link to={`/${item.id}`}>編輯 </Link>
+        </CardButton>
+
+        {isInClosePage || (
+          <CardButton className="cart" disabled={isInCart}>
+            {isInCart ? '已加進暫定菜單' : ' 加到暫定菜單中'}
+          </CardButton>
+        )}
       </CardFooter>
     </Card>
   );

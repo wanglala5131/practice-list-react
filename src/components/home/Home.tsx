@@ -54,9 +54,9 @@ const pageData = {
     },
     {
       name: '查看封存項目',
-      url: 'close',
+      url: '/close',
       class: 'default',
-      type: 'button',
+      type: 'link',
       action: 'go-close',
       disabled: false,
     },
