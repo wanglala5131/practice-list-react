@@ -8,7 +8,7 @@ import Header from 'components/header/Header';
 import UserCard from 'components/user/UserCard'; // 登入註冊頁面
 import Home from 'components/home/Home';
 import Create from 'components/create/Create';
-import Item from 'components/item/Item';
+import Item from 'components/itemPage/ItemPage';
 
 function App() {
   return (
