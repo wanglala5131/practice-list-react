@@ -7010,7 +7010,7 @@ export const item = {
   userId: 31,
   categoryId: 21,
   limit: '需要網子(建議不要男網，太輕鬆了！！！)',
-  isClosed: false,
+  isClosed: true,
   isLiked: false,
   createdAt: '2020-12-20T04:40:43.000Z',
   updatedAt: '2020-12-23T15:32:31.000Z',

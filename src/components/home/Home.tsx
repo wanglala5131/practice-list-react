@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import * as Data from 'components/home/home.type';
+import {
+  CategoriesType,
+  SubCategoriesType,
+  ItemsType,
+  CartItem,
+} from 'components/data.type';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/index-page.jpeg';
 import SearchBar from 'components/home/SearchBar';
 import Item from 'components/home/Item';
-import Cart from './Cart';
+import Cart from 'components/Cart';
 
 // fake data
 import {
@@ -51,19 +56,17 @@ const pageData = {
 
 export default function Home() {
   // 原始資料
-  const [categories, setCategories] = useState<Data.CategoriesType[]>([]);
-  const [subcategories, setSubcategories] = useState<Data.SubCategoriesType[]>(
-    []
-  );
-  const [items, setItems] = useState<Data.ItemsType>([]);
-  const [cartItems, setCartItems] = useState<Data.CartItem[]>([]);
+  const [categories, setCategories] = useState<CategoriesType[]>([]);
+  const [subcategories, setSubcategories] = useState<SubCategoriesType[]>([]);
+  const [items, setItems] = useState<ItemsType>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartItemsArr, setCartItemsArr] = useState<number[]>([]);
 
   // filter
   const [keyword, setKeyword] = useState<string>('');
   const [currentSub, setCurrentSub] = useState<number[]>([]);
   const [isLike, setIsLike] = useState<boolean>(false);
-  const [currentShowItems, setCurrentShowItems] = useState<Data.ItemsType>([]);
+  const [currentShowItems, setCurrentShowItems] = useState<ItemsType>([]);
 
   // 模擬 api
   useEffect(() => {
@@ -78,7 +81,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    let oriItemsArr: Data.ItemsType = items;
+    let oriItemsArr: ItemsType = items;
     if (isLike) {
       oriItemsArr = oriItemsArr.filter(item => item.isLiked);
     }

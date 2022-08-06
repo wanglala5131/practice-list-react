@@ -8,6 +8,7 @@ import Header from 'components/header/Header';
 import UserCard from 'components/user/UserCard'; // 登入註冊頁面
 import Home from 'components/home/Home';
 import Create from 'components/create/Create';
+import Item from 'components/item/Item';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/register" element={<UserCard isLogin={false} />} />
             <Route path="/create" element={<Create isCreate={true} />} />
             <Route path="/edit/:id" element={<Create isCreate={false} />} />
+            <Route path="/:id" element={<Item />} />
           </Routes>
         </div>
       </ThemeProvider>

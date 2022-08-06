@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { pad, scrollStyle } from 'components/variables';
 import { ListAlt } from '@styled-icons/fa-solid';
-import { CartItem } from './home.type';
+import { CartItem } from 'components/data.type';
 
 const Contaniner = styled.div`
   z-index: 50;
@@ -183,6 +183,8 @@ type Props = {
 export default function Cart(props: Props) {
   const { cartItems } = props;
 
+  // TODO: 換頁後要關掉購物車
+
   return (
     <Contaniner>
       <Label htmlFor="cart-simple-input">
@@ -200,7 +202,7 @@ export default function Cart(props: Props) {
           {cartItems.map(item => (
             <Item key={item.id}>
               <ItemContent>
-                <Link to={''} className="cart-simple-link"></Link>
+                <Link to={`/${item.id}`} className="cart-simple-link"></Link>
                 <Name>{item.Item.name}</Name>
                 <Category>{item.Item.Category.name}</Category>
                 <Subcategories>

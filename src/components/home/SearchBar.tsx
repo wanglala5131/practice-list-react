@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { pad } from 'components/variables';
-import { CategoriesType, SubCategoriesType } from 'components/home/home.type';
+import { CategoriesType, SubCategoriesType } from 'components/data.type';
 
 const CardsSearch = styled.div`
   display: flex;

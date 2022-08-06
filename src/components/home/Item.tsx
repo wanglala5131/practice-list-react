@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ItemType } from 'components/home/home.type';
+import { ItemType } from 'components/data.type';
 import { Link } from 'react-router-dom';
 import { Star } from '@styled-icons/fa-solid';
 import defaultImage from 'assets/image/no-img.jpeg';
@@ -152,7 +152,7 @@ export default function Item(props: Props) {
   return (
     <Card>
       <CardHeader>
-        <Link className="card-link" to={''}></Link>
+        <Link className="card-link" to={`/${item.id}`}></Link>
         <CardCategory>{item.Category.name}</CardCategory>
         <CardStar className={item.isLiked ? 'active' : ''} />
         <img alt="card-img" src={item.image || defaultImage} />
