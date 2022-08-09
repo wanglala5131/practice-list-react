@@ -11,6 +11,7 @@ import Create from 'components/create/Create';
 import Item from 'components/itemPage/ItemPage';
 import Close from 'components/close/Close';
 import Setting from 'components/setting/Setting';
+import HowToUse from 'components/howToUse/HowToUse';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
               path="/setting/subcategory"
               element={<Setting settingType={'subcategory'} />}
             />
+            <Route path="/how-to-use" element={<HowToUse />} />
           </Routes>
         </div>
       </ThemeProvider>

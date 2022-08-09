@@ -4,7 +4,7 @@ import { pad } from 'components/variables';
 
 const navList = [
   {
-    path: '/items',
+    path: '/',
     name: '訓練項目',
   },
   {
@@ -20,7 +20,7 @@ const navList = [
     name: '類別設定',
   },
   {
-    path: '/howtouse',
+    path: '/how-to-use',
     name: '使用說明',
   },
 ];

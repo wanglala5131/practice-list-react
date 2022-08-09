@@ -171,7 +171,7 @@ export default function Login(props: Props) {
             <Link to={renderData.bottomLink}>{renderData.bottomLinkTxt}</Link>
           </FormText>
           <FormText>
-            該怎麼使用？<Link to="/howtouse">介紹</Link>
+            該怎麼使用？<Link to="/how-to-use">介紹</Link>
           </FormText>
         </FormContainer>
       </FormCard>
