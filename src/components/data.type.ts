@@ -5,6 +5,18 @@ export interface CategoriesType {
   createdAt: string;
   updatedAt: string;
   UserId: number;
+  Subcategories?: {
+    id: number;
+    name: string;
+    userId: number;
+    categoryId: number;
+    createdAt: string;
+    updatedAt: string;
+    CategoryId: number;
+    UserId: number;
+  }[];
+  hasItems?: boolean;
+  CategoryId?: number;
 }
 
 export interface SubCategoriesType {
@@ -16,7 +28,30 @@ export interface SubCategoriesType {
   updatedAt: string;
   CategoryId: number;
   UserId: number;
-  Items?: object;
+  Items?: {
+    CategoryId: number;
+    ItemType: {
+      ItemId: number;
+      SubcategoryId: number;
+      createdAt: string;
+      itemId: number;
+      subcategoryId: number;
+      updatedAt: string;
+    };
+    UserId: number;
+    categoryId: number;
+    createdAt: string;
+    description: string;
+    id: number;
+    image: null;
+    isClosed: boolean;
+    isLiked: boolean;
+    limit: string;
+    name: string;
+    updatedAt: string;
+    userId: number;
+  }[];
+  hasItems?: boolean;
 }
 
 export interface ItemType {

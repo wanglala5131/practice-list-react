@@ -120,6 +120,7 @@ const PageLinks = styled.div`
         color: ${props => props.theme.opWhite};
       }
 
+      &.active,
       &:not(:disabled):hover {
         background-color: ${props => props.theme.logoGreen};
         color: ${props => props.theme.white};

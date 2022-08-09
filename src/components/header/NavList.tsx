@@ -16,7 +16,7 @@ const navList = [
     name: '已排菜單',
   },
   {
-    path: '/setting',
+    path: '/setting/subcategory',
     name: '類別設定',
   },
   {

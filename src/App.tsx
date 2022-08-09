@@ -10,6 +10,7 @@ import Home from 'components/home/Home';
 import Create from 'components/create/Create';
 import Item from 'components/itemPage/ItemPage';
 import Close from 'components/close/Close';
+import Setting from 'components/setting/Setting';
 
 function App() {
   return (
@@ -27,6 +28,14 @@ function App() {
             <Route path="/edit/:id" element={<Create isCreate={false} />} />
             <Route path="/:id" element={<Item />} />
             <Route path="/close" element={<Close />} />
+            <Route
+              path="/setting/category"
+              element={<Setting settingType={'category'} />}
+            />
+            <Route
+              path="/setting/subcategory"
+              element={<Setting settingType={'subcategory'} />}
+            />
           </Routes>
         </div>
       </ThemeProvider>
