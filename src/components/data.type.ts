@@ -111,3 +111,30 @@ export interface CartItem {
   ItemId: number;
   Item: ItemType;
 }
+
+export interface ItemsInList extends ItemType {
+  ListItem: {
+    listId: number;
+    itemId: number;
+    reps: string;
+    remark: string;
+    sort: number;
+    userId: number;
+    createdAt: string;
+    updatedAt: string;
+    ItemId: number;
+    ListId: number;
+    UserId: number;
+  };
+}
+
+export interface ListType {
+  id: number;
+  userId: number;
+  name: string;
+  isUsed: boolean;
+  createdAt: string;
+  updatedAt: string;
+  UserId: number;
+  Items: ItemsInList[];
+}

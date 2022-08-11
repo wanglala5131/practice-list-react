@@ -198,29 +198,39 @@ type Props = {
     action: string;
     disabled: boolean;
   }[];
+  buttonAction?: (value: string) => void;
   hasCart?: boolean;
 };
 
 export default function Banner(props: Props) {
-  const { bannerImg, title, buttons, hasCart } = props;
+  const { bannerImg, title, buttons, hasCart, buttonAction } = props;
   return (
     <BannerContainer>
       <img src={bannerImg} alt="練習菜單banner" />
       <TitleBox className={`container ${hasCart ? 'has-cart' : ''}`}>
         <PageTitle>{title}</PageTitle>
         <PageLinks>
-          {buttons?.map(item =>
-            item.type === 'link' ? (
-              <Link key={item.action} to={item.url} className={item.class}>
-                {item.name}
+          {buttons?.map(button =>
+            button.type === 'link' ? (
+              <Link
+                key={button.action}
+                to={button.url}
+                className={button.class}
+              >
+                {button.name}
               </Link>
             ) : (
               <button
-                key={item.action}
-                className={item.class}
-                disabled={item.disabled}
+                key={button.action}
+                className={button.class}
+                disabled={button.disabled}
+                onClick={() => {
+                  if (buttonAction) {
+                    buttonAction(button.action);
+                  }
+                }}
               >
-                {item.name}
+                {button.name}
               </button>
             )
           )}

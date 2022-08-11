@@ -183,6 +183,10 @@ export default function Item() {
     }
   }, [cartItemsArr]);
 
+  const buttonAction = (action: string) => {
+    console.log(action);
+  };
+
   return (
     <>
       <Cart cartItems={cartItems} />
@@ -190,6 +194,7 @@ export default function Item() {
         bannerImg={pageData.bannerImg}
         title={item?.name || '---'}
         buttons={pageButtons}
+        buttonAction={buttonAction}
         hasCart={true}
       ></Banner>
       {item && (
