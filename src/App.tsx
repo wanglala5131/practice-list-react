@@ -13,6 +13,7 @@ import Close from 'components/close/Close';
 import Setting from 'components/setting/Setting';
 import HowToUse from 'components/howToUse/HowToUse';
 import Lists from 'components/lists/Lists';
+import ListItems from 'components/listItems/ListItems';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
               element={<Setting settingType={'subcategory'} />}
             />
             <Route path="/lists" element={<Lists />} />
+            <Route path="/cart" element={<ListItems />} />
             <Route path="/how-to-use" element={<HowToUse />} />
           </Routes>
         </div>
