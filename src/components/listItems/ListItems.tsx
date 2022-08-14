@@ -134,7 +134,7 @@ export default function ListItems(props: Props) {
         buttons={pageData.buttons}
       ></Banner>
 
-      <Container className="container">
+      <Container>
         <div>
           <label htmlFor="name-input">菜單名稱*：</label>
           <input
@@ -158,13 +158,13 @@ export default function ListItems(props: Props) {
         </ReactSortable>
 
         <ListButtons>
-          <button className="save">儲存菜單名稱/項目資料</button>
+          {isCart && <button className="save">儲存資料</button>}
           {/* TODO:save只有cart有 */}
-          {isCart && (
-            <button className="submit" onClick={submit}>
-              送出
-            </button>
-          )}
+
+          <button className="submit" onClick={submit}>
+            送出
+          </button>
+
           {/* TODO:有個modal可以在編輯已有菜單時增加項目 */}
         </ListButtons>
       </Container>
