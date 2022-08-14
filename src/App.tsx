@@ -40,7 +40,8 @@ function App() {
               element={<Setting settingType={'subcategory'} />}
             />
             <Route path="/lists" element={<Lists />} />
-            <Route path="/cart" element={<ListItems />} />
+            <Route path="/lists/:id" element={<ListItems isCart={false} />} />
+            <Route path="/cart" element={<ListItems isCart={true} />} />
             <Route path="/how-to-use" element={<HowToUse />} />
           </Routes>
         </div>
