@@ -344,7 +344,7 @@ export default function Lists() {
                 <p>{list.name}</p>
                 <div className="buttons">
                   <button>刪除</button>
-                  <Link to={`/list/${list.id}`}>編輯</Link>
+                  <Link to={`/lists/${list.id}`}>編輯</Link>
                   <button className={isUsed ? 'return' : 'done'}>
                     {isUsed ? '退回' : '標示已使用'}
                   </button>
