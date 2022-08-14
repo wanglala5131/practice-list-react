@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
+import { ReactSortable } from 'react-sortablejs';
 import { pad, buttonStyle, inputStyle } from 'components/variables';
 import { CartItem } from 'components/data.type';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/cart-page.jpeg';
+import ListItem from './ListItem';
 
 // fake data
 import { cartItems as oriCartItems } from 'assets/fake-data/fake';
@@ -37,124 +39,6 @@ const ListNote = styled.p`
 
   @media ${pad} {
     font-size: 20px;
-  }
-`;
-
-const ListItem = styled.div`
-  &:first-child {
-    margin-top: 20px;
-  }
-
-  input[type='checkbox'] {
-    display: none;
-
-    &:checked ~ .list-footer {
-      height: auto;
-      transform: scale(1, 1);
-      transition: transform 0.2s ease-out;
-    }
-  }
-`;
-
-const ListItemHeader = styled.label`
-  display: flex;
-  align-items: center;
-  padding: 10px 15px;
-  border-radius: 10px;
-  background-color: ${props => props.theme.lightLogoGreen};
-
-  > * {
-    margin: 0 10px;
-  }
-`;
-
-const ItemContent = styled.div`
-  flex-grow: 1;
-  display: flex;
-  flex-wrap: wrap;
-
-  > * {
-    margin: 5px 10px;
-  }
-`;
-
-const ItemName = styled.p`
-  display: flex;
-  align-items: center;
-
-  a {
-    margin-left: 5px;
-    font-size: 14px;
-    background-color: ${props => props.theme.darkGreen};
-    border-radius: 10px;
-    padding: 3px;
-    color: ${props => props.theme.white};
-    line-height: 1;
-
-    @media ${pad} {
-      font-size: 16px;
-    }
-  }
-`;
-
-const Category = styled.span`
-  margin-right: 10px;
-  color: ${props => props.theme.fontGreen};
-  font-weight: 700;
-  font-size: 16px;
-  letter-spacing: 1px;
-  white-space: nowrap;
-
-  @media ${pad} {
-    font-size: 20px;
-  }
-`;
-
-const Subcategories = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-
-  @media ${pad} {
-    margin-top: 3px;
-    font-size: 18px;
-  }
-
-  span {
-    display: inline-block;
-    padding: 1px 3px;
-    margin: 0 1px;
-    border: 1px solid ${props => props.theme.darkGray};
-    border-radius: 10px;
-    color: ${props => props.theme.darkGray};
-  }
-`;
-
-const ItemButton = styled.button`
-  margin-right: 10px;
-  font-size: 40px;
-  color: ${props => props.theme.darkRed};
-  cursor: pointer;
-
-  &:hover {
-    color: ${props => props.theme.red};
-    text-shadow: 0px 2px 2px (rgba(0, 0, 0, 0.2));
-  }
-`;
-
-const ListItemFooter = styled.div`
-  padding: 5px 30px;
-  height: 0;
-  transform: scale(1, 0);
-  transform-origin: top;
-  transition: none;
-
-  > div {
-    padding: 10px;
-
-    &:last-child {
-      padding-bottom: 30px;
-    }
   }
 `;
 
@@ -208,17 +92,23 @@ const pageData = {
     },
   ],
 };
+
 export default function ListItems() {
-  const [cartItems, setCateItems] = useState<CartItem[]>([]);
+  const [listItems, setListItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
     setTimeout(() => {
-      setCateItems(oriCartItems);
+      setListItems(oriCartItems);
     }, 1000);
   }, []);
 
   const submit = () => {
-    console.log(cartItems);
+    const sortListtItem = listItems.map((item, index) => ({
+      ...item,
+      sort: index,
+    }));
+
+    console.log(sortListtItem);
   };
 
   const changeValue = (
@@ -226,9 +116,8 @@ export default function ListItems() {
     type: 'reps' | 'remark',
     value: string
   ) => {
-    console.log(itemId, type, value);
-    setCateItems(
-      cartItems.map(item => {
+    setListItems(
+      listItems.map(item => {
         if (item.id === itemId) {
           item[type] = value;
         }
@@ -250,51 +139,19 @@ export default function ListItems() {
           <label htmlFor="name-input">菜單名稱*：</label>
           <input type="text" placeholder="填入菜單名稱" id="name-input" />
         </div>
-        <ListNote>請打開項目填入資料以及排列項目順序(拖曳)</ListNote>
-        <div>
-          {cartItems.map(item => (
-            <ListItem key={item.id}>
-              <ListItemHeader htmlFor={`list-${item.id}`}>
-                <ItemContent>
-                  <ItemName>
-                    {item.Item.name}
-                    <Link to={`/${item.ItemId}`}>查看項目</Link>
-                  </ItemName>
-
-                  <Category>{item.Item.Category.name}</Category>
-                  <Subcategories>
-                    {item.Item.Subcategories.map(subcategory => (
-                      <span key={subcategory.id}>{subcategory.name}</span>
-                    ))}
-                  </Subcategories>
-                </ItemContent>
-
-                <ItemButton>&times;</ItemButton>
-              </ListItemHeader>
-
-              <input type="checkbox" id={`list-${item.id}`} />
-              <ListItemFooter className="list-footer">
-                <div>
-                  <label>組數：</label>
-                  <input
-                    type="text"
-                    placeholder="e.g.三組各10次、持續5分鐘"
-                    onChange={e => changeValue(item.id, 'reps', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label>備註：</label>
-                  <input
-                    type="text"
-                    onChange={e =>
-                      changeValue(item.id, 'remark', e.target.value)
-                    }
-                  />
-                </div>
-              </ListItemFooter>
-            </ListItem>
+        <ListNote>請打開項目「填入資料」及「排列項目順序(拖曳)」</ListNote>
+        <ReactSortable
+          list={listItems}
+          setList={setListItems}
+          ghostClass="dragging"
+          animation={100}
+          swapThreshold={0.65}
+        >
+          {listItems.map(item => (
+            <ListItem key={item.id} item={item} changeValue={changeValue} />
           ))}
-        </div>
+        </ReactSortable>
+
         <ListButtons>
           <button className="save">儲存菜單名稱/項目資料</button>
           {/* TODO:save只有cart有 */}
