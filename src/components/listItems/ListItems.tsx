@@ -16,7 +16,7 @@ const Container = styled.div`
   margin: 0 auto 80px auto;
   padding-top: 20px;
   width: 100%;
-  max-width: 900px;
+  max-width: 850px;
   font-size: 18px;
 
   @media ${pad} {
@@ -78,25 +78,24 @@ const ListButtons = styled.div`
   }
 `;
 
-const pageData = {
-  bannerImg,
-  title: '暫定菜單',
-  buttons: [
-    {
-      name: '回首頁',
-      url: '/',
-      class: 'default',
-      type: 'link',
-      action: 'back',
-      disabled: false,
-    },
-  ],
+type Props = {
+  isCart: boolean;
 };
 
-export default function ListItems() {
+export default function ListItems(props: Props) {
+  const { isCart } = props;
+
+  const pageData = {
+    bannerImg,
+    title: isCart ? '暫定菜單' : '編輯菜單',
+    buttons: [],
+  };
+
+  const [listName, setListName] = useState<string>('');
   const [listItems, setListItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
+    // TODO: 根據暫定清單或已定清單更換 api
     setTimeout(() => {
       setListItems(oriCartItems);
     }, 1000);
@@ -108,6 +107,7 @@ export default function ListItems() {
       sort: index,
     }));
 
+    console.log(listName);
     console.log(sortListtItem);
   };
 
@@ -137,7 +137,12 @@ export default function ListItems() {
       <Container className="container">
         <div>
           <label htmlFor="name-input">菜單名稱*：</label>
-          <input type="text" placeholder="填入菜單名稱" id="name-input" />
+          <input
+            type="text"
+            placeholder="填入菜單名稱"
+            id="name-input"
+            onChange={e => setListName(e.target.value)}
+          />
         </div>
         <ListNote>請打開項目「填入資料」及「排列項目順序(拖曳)」</ListNote>
         <ReactSortable
@@ -155,9 +160,11 @@ export default function ListItems() {
         <ListButtons>
           <button className="save">儲存菜單名稱/項目資料</button>
           {/* TODO:save只有cart有 */}
-          <button className="submit" onClick={submit}>
-            送出
-          </button>
+          {isCart && (
+            <button className="submit" onClick={submit}>
+              送出
+            </button>
+          )}
           {/* TODO:有個modal可以在編輯已有菜單時增加項目 */}
         </ListButtons>
       </Container>

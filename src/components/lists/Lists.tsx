@@ -111,10 +111,13 @@ const ListHeader = styled.label`
     flex-wrap: wrap;
   }
 
-  button {
+  button,
+  a {
     ${buttonStyle}
 
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 3px;
     background-color: ${props => props.theme.lightLogoGreen};
     font-size: 16px;
@@ -131,6 +134,11 @@ const ListHeader = styled.label`
 
     &.done {
       background-color: ${props => props.theme.darkYellow};
+    }
+
+    &:hover {
+      filter: brightness(0.8);
+      transition: all 0.2s ease-in-out;
     }
   }
 `;
@@ -336,7 +344,7 @@ export default function Lists() {
                 <p>{list.name}</p>
                 <div className="buttons">
                   <button>刪除</button>
-                  <button>編輯</button>
+                  <Link to={`/list/${list.id}`}>編輯</Link>
                   <button className={isUsed ? 'return' : 'done'}>
                     {isUsed ? '退回' : '標示已使用'}
                   </button>
@@ -363,7 +371,7 @@ export default function Lists() {
 
                     <ItemTxt>
                       <div className="name">
-                        <Link to={'/'}>{item.name}</Link>
+                        <Link to={`/${item.id}`}>{item.name}</Link>
                       </div>
                       {displayShow.reps ? (
                         <span className="reps">{item.ListItem.reps}</span>
