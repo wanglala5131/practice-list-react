@@ -97,5 +97,9 @@ html, body {
   padding-left: 20px;
   padding-right: 20px;
   margin: auto;
+
+  &.smaller {
+    max-width: 850px;
+  }
 }
 `;

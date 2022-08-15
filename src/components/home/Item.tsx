@@ -1,18 +1,18 @@
 import styled from 'styled-components';
 import { ItemType } from 'components/data.type';
 import { Link } from 'react-router-dom';
-import { Star } from '@styled-icons/fa-solid';
+import { Star, AngleDown, AngleUp } from '@styled-icons/fa-solid';
+
 import defaultImage from 'assets/image/no-img.jpeg';
 
 const Card = styled.div`
   box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  overflow: hidden;
+  z-index: 5;
 
   &:hover {
     box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease-out;
-    transform: translateY(-10px);
   }
 
   .card-link {
@@ -20,6 +20,23 @@ const Card = styled.div`
     z-index: 20;
     width: 100%;
     height: 100%;
+  }
+
+  &.open-nav {
+    z-index: 10;
+  }
+
+  &.card {
+    overflow: hidden;
+
+    &:hover {
+      transform: translateY(-10px);
+    }
+  }
+
+  &.list {
+    display: flex;
+    position: relative;
   }
 `;
 
@@ -32,6 +49,78 @@ const CardHeader = styled.div`
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  &.list {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    height: auto;
+
+    img {
+      display: none;
+    }
+  }
+`;
+
+const CardFixed = styled.div`
+  position: absolute;
+  z-index: 40;
+  top: 0;
+  right: 0px;
+  padding: 0px 5px 5px 5px;
+  cursor: pointer;
+`;
+
+// card 才有
+const StarIcon = styled(Star)`
+  width: 40px;
+  height: 40px;
+
+  &.active,
+  &:hover {
+    color: ${props => props.theme.starYellow};
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease-out;
+  }
+`;
+
+// list 才有
+const AngleDownIcon = styled(AngleDown)`
+  width: 30px;
+  height: 30px;
+`;
+
+// list 才有
+const AngleUpIcon = styled(AngleUp)`
+  width: 30px;
+  height: 30px;
+`;
+
+const CardCategory = styled.span`
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  padding: 1px 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  border-radius: 20px;
+  font-size: 18px;
+  color: ${props => props.theme.lightGray};
+  font-weight: 500;
+
+  &.list {
+    flex-shrink: 0;
+    position: relative;
+    top: 0;
+    left: 0;
+    margin: 0 20px 0 10px;
+    /* border: 0 solid transparent;
+    background-color: transparent;
+    color: ${props => props.theme.fontGreen}; */
   }
 `;
 
@@ -54,40 +143,18 @@ const CardTitle = styled.div`
     line-height: 1.2;
     letter-spacing: 1px;
   }
-`;
 
-const CardStar = styled(Star)`
-  position: absolute;
-  z-index: 40;
-  top: 0;
-  right: 0px;
-  padding: 0px 5px 5px 5px;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
+  &.list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: relative;
+    background-image: none;
+    padding: 15px 30px 15px 0;
 
-  &.active,
-  &:hover {
-    color: ${props => props.theme.starYellow};
+    h3 {
+      margin: 0 10px 0 0;
+    }
   }
-
-  &:hover {
-    transform: scale(1.1);
-    transition: transform 0.2s ease-out;
-  }
-`;
-
-const CardCategory = styled.span`
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  padding: 1px 10px;
-  background-color: rgba(0, 0, 0, 0.6);
-  border: 2px solid rgba(0, 0, 0, 0.6);
-  border-radius: 20px;
-  font-size: 18px;
-  color: ${props => props.theme.lightGray};
-  font-weight: 500;
 `;
 
 const CardSubcategories = styled.div`
@@ -102,6 +169,14 @@ const CardSubcategories = styled.div`
     border-radius: 10px;
     color: ${props => props.theme.darkGreen};
   }
+
+  &.list {
+    justify-content: flex-start;
+
+    span {
+      margin: 5px 1px;
+    }
+  }
 `;
 
 const CardFooter = styled.div`
@@ -111,6 +186,36 @@ const CardFooter = styled.div`
 
   &.close {
     grid-template-columns: 1fr 1fr;
+  }
+
+  &.list {
+    display: none;
+
+    &.active {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+      z-index: 25;
+
+      > * {
+        height: 40px;
+        padding: 0 30px;
+        line-height: 1;
+
+        :not(:disabled) {
+          cursor: pointer;
+
+          &:hover,
+          &:hover a {
+            color: ${props => props.theme.fontGreen};
+          }
+        }
+      }
+    }
   }
 `;
 
@@ -159,37 +264,96 @@ type Props = {
   item: ItemType;
   isInCart?: boolean;
   isInClosePage?: boolean;
+  itemDisplay?: string;
+  listNavOpenId?: number;
+  setListOpenId?: (value: number) => void;
 };
 
 export default function Item(props: Props) {
-  const { item, isInCart = false, isInClosePage = false } = props;
+  const {
+    item,
+    isInCart = false,
+    isInClosePage = false,
+    itemDisplay = '',
+    listNavOpenId,
+    setListOpenId,
+  } = props;
+
+  const changeNavOpenId = (value: number) => {
+    if (setListOpenId) {
+      setListOpenId(value);
+    }
+  };
+
   return (
-    <Card>
-      <CardHeader>
+    <Card
+      className={`${itemDisplay} ${
+        listNavOpenId === item.id ? 'open-nav' : ''
+      }`}
+    >
+      <CardHeader className={itemDisplay}>
         <Link className="card-link" to={`/${item.id}`}></Link>
-        <CardCategory>{item.Category.name}</CardCategory>
-        {isInClosePage || <CardStar className={item.isLiked ? 'active' : ''} />}
+
+        <CardFixed>
+          {!isInClosePage && itemDisplay === 'card' && (
+            <StarIcon className={item.isLiked ? 'active' : ''} />
+          )}
+
+          {itemDisplay === 'list' &&
+            (listNavOpenId === item.id ? (
+              <AngleUpIcon
+                onClick={() => {
+                  changeNavOpenId(0);
+                }}
+              />
+            ) : (
+              <AngleDownIcon
+                onClick={() => {
+                  changeNavOpenId(item.id);
+                }}
+              />
+            ))}
+        </CardFixed>
+
         <img alt="card-img" src={item.image || defaultImage} />
-        <CardTitle>
+
+        <CardCategory className={itemDisplay}>
+          {item.Category.name}
+        </CardCategory>
+
+        <CardTitle className={itemDisplay}>
           <h3>{item.name}</h3>
-          <CardSubcategories>
+
+          <CardSubcategories className={itemDisplay}>
             {item.Subcategories?.map(subcategory => (
               <span key={subcategory.id}>{subcategory.name}</span>
             ))}
           </CardSubcategories>
         </CardTitle>
       </CardHeader>
-      <CardFooter className={isInClosePage ? 'close' : ''}>
-        <CardButton className="close">
+
+      <CardFooter
+        className={`
+        ${isInClosePage ? 'close' : ''} 
+        ${itemDisplay} 
+        ${listNavOpenId === item.id ? 'active' : ''}`}
+      >
+        {itemDisplay === 'list' && (
+          <CardButton>{isInClosePage ? '加入最愛' : '移除最愛'}</CardButton>
+        )}
+        <CardButton className={itemDisplay === 'list' ? '' : 'close'}>
           {isInClosePage ? '解除封存' : '封存'}
         </CardButton>
 
-        <CardButton className="edit">
+        <CardButton className={itemDisplay === 'list' ? '' : 'edit'}>
           <Link to={`/${item.id}`}>編輯 </Link>
         </CardButton>
 
         {isInClosePage || (
-          <CardButton className="cart" disabled={isInCart}>
+          <CardButton
+            className={itemDisplay === 'list' ? '' : 'cart'}
+            disabled={isInCart}
+          >
             {isInCart ? '已加進暫定菜單' : ' 加到暫定菜單中'}
           </CardButton>
         )}
