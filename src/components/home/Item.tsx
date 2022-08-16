@@ -118,9 +118,12 @@ const CardCategory = styled.span`
     top: 0;
     left: 0;
     margin: 0 20px 0 10px;
-    /* border: 0 solid transparent;
-    background-color: transparent;
-    color: ${props => props.theme.fontGreen}; */
+
+    &.like {
+      background-color: rgba(254, 242, 99, 0.6);
+      border: 2px solid rgba(254, 242, 99, 1);
+      color: ${props => props.theme.opBlack};
+    }
   }
 `;
 
@@ -203,7 +206,7 @@ const CardFooter = styled.div`
 
       > * {
         height: 40px;
-        padding: 0 30px;
+        padding: 0 35px;
         line-height: 1;
 
         :not(:disabled) {
@@ -287,9 +290,9 @@ export default function Item(props: Props) {
 
   return (
     <Card
-      className={`${itemDisplay} ${
-        listNavOpenId === item.id ? 'open-nav' : ''
-      }`}
+      className={`
+      ${itemDisplay} 
+      ${listNavOpenId === item.id ? 'open-nav' : ''}`}
     >
       <CardHeader className={itemDisplay}>
         <Link className="card-link" to={`/${item.id}`}></Link>
@@ -317,7 +320,9 @@ export default function Item(props: Props) {
 
         <img alt="card-img" src={item.image || defaultImage} />
 
-        <CardCategory className={itemDisplay}>
+        <CardCategory
+          className={`${itemDisplay} ${item.isLiked ? 'like' : ''}`}
+        >
           {item.Category.name}
         </CardCategory>
 
@@ -338,8 +343,8 @@ export default function Item(props: Props) {
         ${itemDisplay} 
         ${listNavOpenId === item.id ? 'active' : ''}`}
       >
-        {itemDisplay === 'list' && (
-          <CardButton>{isInClosePage ? '加入最愛' : '移除最愛'}</CardButton>
+        {itemDisplay === 'list' && !isInClosePage && (
+          <CardButton>{item.isLiked ? '移除最愛' : '加入最愛'}</CardButton>
         )}
         <CardButton className={itemDisplay === 'list' ? '' : 'close'}>
           {isInClosePage ? '解除封存' : '封存'}
