@@ -25,11 +25,8 @@ const CardsWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    justify-content: flex-start;
     grid-gap: 20px;
-
-    > * {
-      flex-grow: 1;
-    }
   }
 `;
 
@@ -43,6 +40,7 @@ const IconClass = css`
   width: 30px;
   height: 30px;
   color: ${props => props.theme.gray};
+  cursor: pointer;
 
   &.active {
     color: ${props => props.theme.fontGreen};
