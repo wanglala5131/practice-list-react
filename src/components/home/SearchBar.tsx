@@ -5,7 +5,7 @@ import { pad } from 'components/variables';
 import {
   CategoriesType,
   SubCategoriesType,
-  ItemsType,
+  ItemType,
 } from 'components/data.type';
 
 // fake data
@@ -52,6 +52,7 @@ const CardsSearch = styled.div`
     cursor: pointer;
 
     @media ${pad} {
+      max-width: 100%;
       width: 700px;
       padding: 10px;
     }
@@ -170,8 +171,8 @@ const SubcategoryController = styled.div`
 `;
 
 type Props = {
-  oriItems: ItemsType;
-  setCurrentShowItems: (value: ItemsType) => void;
+  oriItems: ItemType[];
+  setCurrentShowItems: (value: ItemType[]) => void;
 };
 
 export default function searchBar(props: Props) {
@@ -242,7 +243,7 @@ export default function searchBar(props: Props) {
   };
 
   useEffect(() => {
-    let filterItems: ItemsType = oriItems;
+    let filterItems: ItemType[] = oriItems;
     if (isLike) {
       filterItems = filterItems.filter(item => item.isLiked);
     }

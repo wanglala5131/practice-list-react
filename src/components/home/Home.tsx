@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { ItemsType, CartItem } from 'components/data.type';
+import { ItemType, CartItem } from 'components/data.type';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/index-page.jpeg';
@@ -40,10 +40,10 @@ const pageData = {
 
 export default function Home() {
   // 原始資料
-  const [items, setItems] = useState<ItemsType>([]);
+  const [items, setItems] = useState<ItemType[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartItemsArr, setCartItemsArr] = useState<number[]>([]);
-  const [currentShowItems, setCurrentShowItems] = useState<ItemsType>([]);
+  const [currentShowItems, setCurrentShowItems] = useState<ItemType[]>([]);
 
   useEffect(() => {
     setTimeout(() => {

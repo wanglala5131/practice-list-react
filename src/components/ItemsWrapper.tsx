@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { List, ThLarge } from '@styled-icons/fa-solid';
 
-import { ItemsType } from 'components/data.type';
+import { ItemType } from 'components/data.type';
 import Item from 'components/home/Item';
 
 const CardsNumTxt = styled.p`
@@ -58,7 +58,7 @@ const ListIcon = styled(List)`
 
 type Props = {
   isInClosePage: boolean;
-  itemsList: ItemsType;
+  itemsList: ItemType[];
   cartItemsArr?: number[];
 };
 
