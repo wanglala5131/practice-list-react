@@ -139,10 +139,12 @@ const ListItemFooter = styled.div`
 type Props = {
   item: CartItem;
   changeValue: (id: number, type: 'reps' | 'remark', value: string) => void;
+  deleteItem: (value: number) => void;
 };
 
 export default function ListItem(props: Props) {
-  const { item, changeValue } = props;
+  const { item, changeValue, deleteItem } = props;
+
   return (
     <ListItemContainer>
       <ListItemHeader className="list-item-header" htmlFor={`list-${item.id}`}>
@@ -160,7 +162,7 @@ export default function ListItem(props: Props) {
           </Subcategories>
         </ItemContent>
 
-        <ItemButton>&times;</ItemButton>
+        <ItemButton onClick={() => deleteItem(item.id)}>&times;</ItemButton>
       </ListItemHeader>
 
       <input type="checkbox" id={`list-${item.id}`} />
@@ -170,6 +172,7 @@ export default function ListItem(props: Props) {
           <input
             type="text"
             placeholder="e.g.三組各10次、持續5分鐘"
+            defaultValue={item.reps}
             onChange={e => changeValue(item.id, 'reps', e.target.value)}
           />
         </div>
@@ -177,6 +180,7 @@ export default function ListItem(props: Props) {
           <label>備註：</label>
           <input
             type="text"
+            defaultValue={item.remark}
             onChange={e => changeValue(item.id, 'remark', e.target.value)}
           />
         </div>
