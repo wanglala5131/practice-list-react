@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { List, ThLarge } from '@styled-icons/fa-solid';
 
-import { ItemsType } from 'components/data.type';
+import { ItemType } from 'components/data.type';
 import Item from 'components/home/Item';
 
 const CardsNumTxt = styled.p`
@@ -25,11 +25,8 @@ const CardsWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    justify-content: flex-start;
     grid-gap: 20px;
-
-    > * {
-      flex-grow: 1;
-    }
   }
 `;
 
@@ -43,6 +40,7 @@ const IconClass = css`
   width: 30px;
   height: 30px;
   color: ${props => props.theme.gray};
+  cursor: pointer;
 
   &.active {
     color: ${props => props.theme.fontGreen};
@@ -60,7 +58,7 @@ const ListIcon = styled(List)`
 
 type Props = {
   isInClosePage: boolean;
-  itemsList: ItemsType;
+  itemsList: ItemType[];
   cartItemsArr?: number[];
 };
 

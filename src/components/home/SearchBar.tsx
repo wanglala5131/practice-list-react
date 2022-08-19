@@ -1,7 +1,18 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { pad } from 'components/variables';
-import { CategoriesType, SubCategoriesType } from 'components/data.type';
+
+import {
+  CategoriesType,
+  SubCategoriesType,
+  ItemType,
+} from 'components/data.type';
+
+// fake data
+import {
+  categories as OriCate,
+  subcategories as OriSub,
+} from 'assets/fake-data/fake';
 
 const CardsSearch = styled.div`
   display: flex;
@@ -41,6 +52,7 @@ const CardsSearch = styled.div`
     cursor: pointer;
 
     @media ${pad} {
+      max-width: 100%;
       width: 700px;
       padding: 10px;
     }
@@ -159,45 +171,31 @@ const SubcategoryController = styled.div`
 `;
 
 type Props = {
-  categories: CategoriesType[];
-  subcategories: SubCategoriesType[];
-  setCurrentSub: (value: number[]) => void;
-  currentSub: number[];
-  isLike: boolean;
-  setIsLike: (value: boolean) => void;
-  setKeyword: (value: string) => void;
+  oriItems: ItemType[];
+  setCurrentShowItems: (value: ItemType[]) => void;
 };
 
 export default function searchBar(props: Props) {
-  const {
-    categories,
-    subcategories,
-    setCurrentSub,
-    currentSub,
-    isLike,
-    setIsLike,
-    setKeyword,
-  } = props;
+  const { oriItems, setCurrentShowItems } = props;
+
+  // 原始資料
+  const [categories, setCategories] = useState<CategoriesType[]>([]);
+  const [subcategories, setSubcategories] = useState<SubCategoriesType[]>([]);
+
+  // 模擬 api
+  useEffect(() => {
+    setTimeout(() => {
+      setCategories(OriCate);
+      setSubcategories(OriSub);
+    }, 800);
+  }, []);
+
+  // search bar 顯示的主分類和次分類
   const [currentCate, setCurrentCate] = useState<string>('');
   const [currentShowSub, setCurrentShowSub] = useState<number[]>([]);
 
   const categoriesHandler = (value: string) => {
     setCurrentCate(value);
-  };
-
-  // 勾選的次分類
-  const subcategoriesChecked = (value: boolean, id: number) => {
-    if (value && !currentSub.includes(id)) {
-      setCurrentSub([...currentSub, id]);
-    } else {
-      setCurrentSub(currentSub.filter(item => item !== id));
-    }
-  };
-  const checkedAll = () => {
-    setCurrentSub(subcategories.map(subcategory => subcategory.id));
-  };
-  const checkedNone = () => {
-    setCurrentSub([]);
   };
 
   const filterSubcategories = (value: string) => {
@@ -224,6 +222,43 @@ export default function searchBar(props: Props) {
   useEffect(() => {
     filterSubcategories('all');
   }, [subcategories]);
+
+  // filter items
+  const [keyword, setKeyword] = useState<string>('');
+  const [currentSub, setCurrentSub] = useState<number[]>([]); // 選取的次分類
+  const [isLike, setIsLike] = useState<boolean>(false);
+
+  const subcategoriesChecked = (value: boolean, id: number) => {
+    if (value && !currentSub.includes(id)) {
+      setCurrentSub([...currentSub, id]);
+    } else {
+      setCurrentSub(currentSub.filter(item => item !== id));
+    }
+  };
+  const checkedAll = () => {
+    setCurrentSub(subcategories.map(subcategory => subcategory.id));
+  };
+  const checkedNone = () => {
+    setCurrentSub([]);
+  };
+
+  useEffect(() => {
+    let filterItems: ItemType[] = oriItems;
+    if (isLike) {
+      filterItems = filterItems.filter(item => item.isLiked);
+    }
+
+    if (keyword) {
+      filterItems = filterItems.filter(item => item.name.includes(keyword));
+    }
+
+    filterItems = filterItems.filter(item =>
+      item.Subcategories.some(subcategory =>
+        currentSub.includes(subcategory.id)
+      )
+    );
+    setCurrentShowItems(filterItems);
+  }, [currentSub, isLike, keyword]);
 
   return (
     <>
@@ -259,17 +294,6 @@ export default function searchBar(props: Props) {
                 onChange={e => setIsLike(e.target.checked)}
               />
               <label htmlFor="like">只顯示星號項目</label>
-            </CheckboxLabel>
-            <CheckboxLabel className="has-gap">
-              <input
-                type="checkbox"
-                className="bullet"
-                name="bullet"
-                id="bullet"
-              />
-              <label htmlFor="bullet" v-if="!searchPosition">
-                不顯示圖片
-              </label>
             </CheckboxLabel>
           </SearchItem>
 

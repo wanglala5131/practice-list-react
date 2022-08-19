@@ -96,20 +96,18 @@ export interface ItemType {
   }[];
 }
 
-export interface ItemsType extends Array<ItemType> {}
-
 export interface CartItem {
   id: number;
-  userId: number;
+  userId?: number;
   itemId: number;
   reps: string;
   remark: string;
   sort: number;
-  createdAt: string;
-  updatedAt: string;
-  UserId: number;
-  ItemId: number;
-  Item: ItemType;
+  createdAt?: string;
+  updatedAt?: string;
+  UserId?: number;
+  ItemId?: number;
+  Item: ItemType | ItemsInList;
 }
 
 export interface ItemsInList extends ItemType {

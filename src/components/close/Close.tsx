@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ItemsType } from 'components/data.type';
+import { ItemType } from 'components/data.type';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/stop.jpeg';
@@ -24,7 +24,7 @@ const pageData = {
 };
 
 export default function Home() {
-  const [items, setItems] = useState<ItemsType>([]);
+  const [items, setItems] = useState<ItemType[]>([]);
 
   // 模擬 api
   useEffect(() => {

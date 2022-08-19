@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-// import { Link } from 'react-router-dom';
 import { ReactSortable } from 'react-sortablejs';
 import { pad, buttonStyle, inputStyle } from 'components/variables';
-import { CartItem } from 'components/data.type';
+import { CartItem, ItemType } from 'components/data.type';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/cart-page.jpeg';
 import ListItem from './ListItem';
+import AddItemModal from 'components/listItems/AddItemModal';
 
 // fake data
-import { cartItems as oriCartItems } from 'assets/fake-data/fake';
+import {
+  cartItems as oriCartItems,
+  lists as oriLists,
+} from 'assets/fake-data/fake';
 
 const Container = styled.div`
   margin: 0 auto 80px auto;
-  padding-top: 20px;
+  padding: 20px 20px 0;
   width: 100%;
   max-width: 850px;
   font-size: 18px;
@@ -66,7 +70,7 @@ const ListButtons = styled.div`
       background-color: ${props => props.theme.logoGreen};
     }
 
-    &.save {
+    &.default {
       background-color: ${props => props.theme.gray};
     }
 
@@ -85,6 +89,9 @@ type Props = {
 export default function ListItems(props: Props) {
   const { isCart } = props;
 
+  const location = useLocation();
+  const { pathname } = location;
+
   const pageData = {
     bannerImg,
     title: isCart ? '暫定菜單' : '編輯菜單',
@@ -93,13 +100,39 @@ export default function ListItems(props: Props) {
 
   const [listName, setListName] = useState<string>('');
   const [listItems, setListItems] = useState<CartItem[]>([]);
+  const [listItemsArr, setListItemsArr] = useState<number[]>([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    // TODO: 根據暫定清單或已定清單更換 api
+    // 先清空
+    setListItems([]);
+    setListItemsArr([]);
+    setListName('');
+
     setTimeout(() => {
-      setListItems(oriCartItems);
+      // list items 轉換成 CartItem 的形式
+      let item = isCart
+        ? oriCartItems
+        : oriLists[1].Items.map(item => ({
+            id: item.id,
+            Item: item,
+            itemId: item.id,
+            reps: item.ListItem.reps,
+            sort: item.ListItem.sort,
+            remark: item.ListItem.remark,
+          }));
+
+      setListItems(item);
+      setListItemsArr(item.map(item => item.id));
+
+      if (!isCart) {
+        setListName(oriLists[1].name);
+      } else {
+        setListName(localStorage.getItem('cartName') || '');
+      }
     }, 1000);
-  }, []);
+  }, [pathname]);
 
   const submit = () => {
     const sortListtItem = listItems.map((item, index) => ({
@@ -109,6 +142,17 @@ export default function ListItems(props: Props) {
 
     console.log(listName);
     console.log(sortListtItem);
+  };
+
+  const saveCart = () => {
+    if (isCart) {
+      if (listName) {
+        localStorage.setItem('cartName', listName);
+      } else {
+        localStorage.removeItem('cartName');
+      }
+    }
+    // TODO: 發api儲存暫定菜單
   };
 
   const changeValue = (
@@ -126,6 +170,40 @@ export default function ListItems(props: Props) {
     );
   };
 
+  const [tempAddItemIds, setItempAddItemIds] = useState<number[]>([]); // 暫時添加的項目
+
+  const addItem = (item: ItemType, access: boolean) => {
+    if (access) {
+      setListItemsArr([...listItemsArr, item.id]);
+      setListItems(prevVal => {
+        return [
+          ...prevVal,
+          {
+            id: item.id,
+            Item: item,
+            itemId: item.id,
+            reps: '',
+            sort: 100,
+            remark: '',
+          },
+        ];
+      });
+      setItempAddItemIds([...tempAddItemIds, item.id]);
+    }
+  };
+  const deleteItem = (id: number) => {
+    if (tempAddItemIds.includes(id)) {
+      setListItemsArr(prevVar => {
+        return prevVar.filter(item => item !== id);
+      });
+      setListItems(prevVar => {
+        return prevVar.filter(item => item.id !== id);
+      });
+
+      return;
+    }
+  };
+
   return (
     <>
       <Banner
@@ -141,10 +219,11 @@ export default function ListItems(props: Props) {
             type="text"
             placeholder="填入菜單名稱"
             id="name-input"
+            defaultValue={listName}
             onChange={e => setListName(e.target.value)}
           />
         </div>
-        <ListNote>請打開項目「填入資料」及「排列項目順序(拖曳)」</ListNote>
+        <ListNote>請點擊打開項目「填入資料」及「排列項目順序(拖曳)」</ListNote>
         <ReactSortable
           list={listItems}
           setList={setListItems}
@@ -153,20 +232,38 @@ export default function ListItems(props: Props) {
           swapThreshold={0.65}
         >
           {listItems.map(item => (
-            <ListItem key={item.id} item={item} changeValue={changeValue} />
+            <ListItem
+              key={item.id}
+              item={item}
+              changeValue={changeValue}
+              deleteItem={deleteItem}
+            />
           ))}
         </ReactSortable>
 
         <ListButtons>
-          {isCart && <button className="save">儲存資料</button>}
-          {/* TODO:save只有cart有 */}
+          {isCart && (
+            <button className="default" onClick={saveCart}>
+              儲存資料
+            </button>
+          )}
+          {isCart || (
+            <button className="default" onClick={() => setIsModalOpen(true)}>
+              增加項目
+            </button>
+          )}
 
           <button className="submit" onClick={submit}>
-            送出
+            {isCart ? '送出' : '儲存'}
           </button>
-
-          {/* TODO:有個modal可以在編輯已有菜單時增加項目 */}
         </ListButtons>
+
+        <AddItemModal
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+          listItemsArr={listItemsArr}
+          addItem={addItem}
+        />
       </Container>
     </>
   );
