@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 import { pad } from 'components/variables';
 import { StringSchema, NumberSchema, object } from 'yup';
-
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+
+// import { useAppSelector, useAppDispatch } from 'hooks/hooks';
+// import { setAuth, RemoveAuth } from 'actions/user';
 
 const FormContainer = styled.div`
   padding: 10px 20px 30px 20px;
@@ -86,6 +88,10 @@ type Props = {
 
 export default function UserForm(props: Props) {
   const { data, isLogin } = props;
+
+  // const userInfo = useAppSelector(state => state.user);
+  // const dispatch = useAppDispatch();
+
   let initialObj: Obj = {
     initialValues: {},
     validationSchema: {},
