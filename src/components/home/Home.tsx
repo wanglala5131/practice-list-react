@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-
 import { ItemType, CartItem } from 'components/data.type';
 
 import Banner from 'components/Banner';

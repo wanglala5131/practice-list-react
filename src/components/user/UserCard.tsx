@@ -92,13 +92,6 @@ type Props = {
   isLogin: boolean;
 };
 
-type SubmitData = {
-  email?: string;
-  password?: string;
-  name?: string;
-  confirmPassword?: string;
-};
-
 export default function Login(props: Props) {
   const { isLogin } = props;
 
