@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ItemType, CartItem } from 'components/data.type';
 
-import { test } from 'api/user';
-
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/index-page.jpeg';
 import SearchBar from 'components/home/SearchBar';
@@ -53,15 +51,7 @@ export default function Home() {
       setCartItems(OriCartItems);
       setCartItemsArr(OriCartItemsArr);
     }, 1000);
-
-    apiTest();
   }, []);
-
-  const apiTest = () => {
-    test().then(res => {
-      console.log(res);
-    });
-  };
 
   return (
     <>

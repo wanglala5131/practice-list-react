@@ -1,10 +1,16 @@
 import styled from 'styled-components';
 import { pad } from 'components/variables';
+import { useNavigate } from 'react-router-dom';
 import { StringSchema, NumberSchema, object } from 'yup';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 
-// import { useAppSelector, useAppDispatch } from 'hooks/hooks';
-// import { setAuth, RemoveAuth } from 'actions/user';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+import { login } from 'api/user';
+
+import { useAppDispatch } from 'hooks/hooks';
+import { setAuth } from 'actions/user';
 
 const FormContainer = styled.div`
   padding: 10px 20px 30px 20px;
@@ -89,8 +95,9 @@ type Props = {
 export default function UserForm(props: Props) {
   const { data, isLogin } = props;
 
-  // const userInfo = useAppSelector(state => state.user);
-  // const dispatch = useAppDispatch();
+  const swalAlert = withReactContent(Swal);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   let initialObj: Obj = {
     initialValues: {},
@@ -109,19 +116,47 @@ export default function UserForm(props: Props) {
     };
   }, initialObj);
 
+  const submit = (
+    values: { [key: string]: string | number },
+    setSubmitting: (isSubmitting: boolean) => void
+  ) => {
+    if (isLogin) {
+      const { email, password } = values;
+      setSubmitting(true);
+
+      login({ email, password })
+        .then(res => {
+          const { token, user } = res;
+          dispatch(setAuth({ token, user, isLogin: true }));
+        })
+        .then(() => {
+          navigate('/');
+        })
+        .catch(() => {
+          swalAlert
+            .fire({
+              icon: 'warning',
+              text: '帳號或密碼輸入錯誤',
+            })
+            .then(() => {
+              setSubmitting(false);
+            });
+        });
+    } else {
+      console.log('註冊先等等');
+    }
+  };
+
   return (
     <Formik
       initialValues={dataFormat.initialValues}
       validationSchema={object(dataFormat.validationSchema)}
       onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          console.log(values);
-          setSubmitting(false);
-        }, 500);
+        submit(values, setSubmitting);
       }}
       enableReinitialize={true}
     >
-      {({ values }) => (
+      {({ values, isSubmitting }) => (
         <Form>
           <FormContainer>
             {data.map(item => (
@@ -142,7 +177,9 @@ export default function UserForm(props: Props) {
             ))}
           </FormContainer>
           <FormButton>
-            <button type="submit">{isLogin ? '登入' : '註冊'}</button>
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? ' 送出中' : isLogin ? '登入' : '註冊'}
+            </button>
           </FormButton>
         </Form>
       )}

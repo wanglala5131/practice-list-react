@@ -3,6 +3,11 @@ import { AnyAction } from 'redux';
 export const initState = {
   token: '',
   isLogin: false,
+  user: {
+    id: 0,
+    name: '',
+    email: '',
+  },
 };
 
 export const userReducer = (state = initState, action: AnyAction) => {
