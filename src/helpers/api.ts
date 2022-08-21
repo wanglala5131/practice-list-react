@@ -22,12 +22,4 @@ axiosInstance.interceptors.request.use(
   err => Promise.reject(err)
 );
 
-axiosInstance.interceptors.response.use((res: AxiosResponse) => {
-  if (res.data) {
-    return res.data;
-  } else {
-    return res;
-  }
-});
-
 export default axiosInstance;
