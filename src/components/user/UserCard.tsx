@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { pad } from 'components/variables';
-import { string } from 'yup';
+import { string, ref } from 'yup';
 
 import BackgroundImage from 'components/BackgroundImage';
 import UserForm from 'components/user/UserForm';
@@ -138,7 +138,9 @@ export default function Login(props: Props) {
       key: 'confirmPassword',
       label: '再次確認密碼',
       initialValue: '',
-      validation: string().required('此欄位為必填'),
+      validation: string()
+        .required('此欄位為必填')
+        .oneOf([ref('password')], '與密碼不一致'),
       type: 'password',
     },
   ];
