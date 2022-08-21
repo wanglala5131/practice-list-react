@@ -14,3 +14,8 @@ export interface LoginRes {
   token: string;
   user: { id: number; name: string; email: string };
 }
+
+export interface RegisterRes {
+  status: string;
+  message?: string;
+}

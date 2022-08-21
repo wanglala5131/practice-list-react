@@ -7,10 +7,11 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-import { login } from 'api/user';
+import { login, register } from 'api/user';
 
 import { useAppDispatch } from 'hooks/hooks';
 import { setAuth } from 'actions/user';
+import { Igloo } from '@styled-icons/fa-solid';
 
 const FormContainer = styled.div`
   padding: 10px 20px 30px 20px;
@@ -120,9 +121,10 @@ export default function UserForm(props: Props) {
     values: { [key: string]: string | number },
     setSubmitting: (isSubmitting: boolean) => void
   ) => {
+    setSubmitting(true);
+
     if (isLogin) {
       const { email, password } = values;
-      setSubmitting(true);
 
       login({ email, password })
         .then(res => {
@@ -143,7 +145,40 @@ export default function UserForm(props: Props) {
             });
         });
     } else {
-      console.log('註冊先等等');
+      const { name, email, password, confirmPassword } = values;
+
+      register({ name, email, password, confirmPassword })
+        .then(res => {
+          if (res.status === 'success') {
+            swalAlert
+              .fire({
+                icon: 'success',
+                text: '建立帳號成功，將導回登入頁',
+              })
+              .then(() => {
+                navigate('/login');
+              });
+          } else {
+            swalAlert
+              .fire({
+                icon: 'warning',
+                text: res.message,
+              })
+              .then(() => {
+                setSubmitting(false);
+              });
+          }
+        })
+        .catch(() => {
+          swalAlert
+            .fire({
+              icon: 'warning',
+              text: '發生錯誤，請重試一次',
+            })
+            .then(() => {
+              setSubmitting(false);
+            });
+        });
     }
   };
 
