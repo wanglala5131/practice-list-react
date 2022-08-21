@@ -1,6 +1,9 @@
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { pad } from 'components/variables';
+
+import { useAppDispatch } from 'hooks/hooks';
+import { removeAuth } from 'actions/user';
 
 const navList = [
   {
@@ -104,6 +107,7 @@ const NavItem = styled.li`
     font-size: 18px;
     font-weight: 700;
     letter-spacing: 2px;
+    cursor: pointer;
 
     @media ${pad} {
       padding: 0;
@@ -139,6 +143,15 @@ type Props = {
 export default function NavList(props: Props) {
   const { clickNav } = props;
 
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const logout = () => {
+    dispatch(removeAuth());
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <NavListUl className="nav-list">
       {navList.map(item => (
@@ -147,7 +160,7 @@ export default function NavList(props: Props) {
         </NavItem>
       ))}
       <NavItem className="logout">
-        <button>登出</button>
+        <button onClick={logout}>登出</button>
       </NavItem>
     </NavListUl>
   );

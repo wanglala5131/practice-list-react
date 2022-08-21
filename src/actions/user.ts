@@ -23,7 +23,7 @@ export const setAuth = (values: PayloadType): setAuthType => {
   };
 };
 
-export const RemoveAuth = (): setAuthType => ({
+export const removeAuth = (): setAuthType => ({
   type: 'REMOVE_AUTH',
   payload: {
     token: '',
