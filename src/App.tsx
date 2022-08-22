@@ -1,7 +1,16 @@
-import { Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { ResetStyle, GlobalStyle } from 'components/globalStyle';
 import { theme } from 'components/variables';
+
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { useAppSelector, useAppDispatch } from 'hooks/hooks';
+import { removeAuth, setAuth } from 'actions/user';
+import { getCurrentUser } from 'api/user';
+
+// // 權限驗證
+// import { LoginAuth } from 'components/auth/auth';
 
 // router
 import Header from 'components/header/Header';
@@ -16,6 +25,73 @@ import Lists from 'components/lists/Lists';
 import ListItems from 'components/listItems/ListItems';
 
 function App() {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const location = useLocation();
+  const path = location.pathname;
+  const tokenInLocal = localStorage.getItem('token');
+  const { isLogin } = useAppSelector(state => state.user);
+
+  const isLoginCannotEnter = ['/login', '/register'].includes(path); // 是否為登入後不可進入的頁面
+  const loginRedirect = '/';
+  const notLoginRedirect = 'login';
+
+  // 權限驗證
+  useEffect(() => {
+    if (path === '/how-to-use') {
+      navigate(path, { replace: true });
+      return;
+    }
+
+    if (isLogin) {
+      if (isLoginCannotEnter) {
+        navigate(loginRedirect, { replace: true });
+      } else {
+        navigate(path, { replace: true });
+      }
+    } else {
+      if (tokenInLocal) {
+        getCurrentUser(tokenInLocal)
+          .then(res => {
+            if (res) {
+              const { name, email, id } = res;
+              setAuth({
+                token: tokenInLocal,
+                isLogin: true,
+                user: { id, name, email },
+              });
+
+              if (isLoginCannotEnter) {
+                navigate(loginRedirect, { replace: true });
+              } else {
+                navigate(path, { replace: true });
+              }
+            }
+          })
+          .catch(() => {
+            dispatch(removeAuth());
+            localStorage.removeItem('token');
+
+            if (isLoginCannotEnter) {
+              navigate(path, { replace: true });
+            } else {
+              navigate(notLoginRedirect, { replace: true });
+            }
+          });
+      } else {
+        dispatch(removeAuth());
+        localStorage.removeItem('token');
+
+        if (isLoginCannotEnter) {
+          navigate(path, { replace: true });
+        } else {
+          navigate(notLoginRedirect, { replace: true });
+        }
+      }
+    }
+  }, [path]);
+
   return (
     <div className="App">
       <ResetStyle />

@@ -130,6 +130,7 @@ export default function UserForm(props: Props) {
         .then(res => {
           const { token, user } = res;
           dispatch(setAuth({ token, user, isLogin: true }));
+          localStorage.setItem('token', token);
         })
         .then(() => {
           navigate('/');

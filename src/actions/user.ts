@@ -15,7 +15,6 @@ export interface setAuthType {
 
 export const setAuth = (values: PayloadType): setAuthType => {
   const { token, isLogin, user } = values;
-  localStorage.setItem('token', token);
 
   return {
     type: 'SET_AUTH',
