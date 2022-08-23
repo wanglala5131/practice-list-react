@@ -19,3 +19,9 @@ export interface RegisterRes {
   status: string;
   message?: string;
 }
+
+export interface currentUserRes {
+  id: number;
+  name: string;
+  email: string;
+}
