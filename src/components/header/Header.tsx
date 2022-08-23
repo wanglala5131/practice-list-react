@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { pad } from 'components/variables';
 
+import { useAppSelector } from 'hooks/hooks';
+
 import logo from 'assets/image/logo.png';
 import NavList from './NavList';
 
@@ -129,9 +131,13 @@ const HambuegerArea = styled.label`
 `;
 
 export default function Header() {
+  const { isLogin } = useAppSelector(state => state.user);
+
   const hamburgerInput = useRef<HTMLInputElement>(null!);
   const clickNav = () => {
-    hamburgerInput.current.checked = false;
+    if (isLogin) {
+      hamburgerInput.current.checked = false;
+    }
   };
 
   return (
@@ -141,19 +147,21 @@ export default function Header() {
           <img src={logo} alt="practice-list-logo" />
         </Link>
       </Logo>
-      <Nav>
-        <input
-          type="checkbox"
-          id="nav-toggle"
-          className="nav-toggle"
-          ref={hamburgerInput}
-        />
-        <label htmlFor="nav-toggle" className="nav-modal"></label>
-        <NavList clickNav={clickNav} />
-        <HambuegerArea htmlFor="nav-toggle" className="hamburger">
-          <span></span>
-        </HambuegerArea>
-      </Nav>
+      {isLogin && (
+        <Nav>
+          <input
+            type="checkbox"
+            id="nav-toggle"
+            className="nav-toggle"
+            ref={hamburgerInput}
+          />
+          <label htmlFor="nav-toggle" className="nav-modal"></label>
+          <NavList clickNav={clickNav} />
+          <HambuegerArea htmlFor="nav-toggle" className="hamburger">
+            <span></span>
+          </HambuegerArea>
+        </Nav>
+      )}
     </HeaderArea>
   );
 }
