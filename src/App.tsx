@@ -4,13 +4,10 @@ import { ThemeProvider } from 'styled-components';
 import { ResetStyle, GlobalStyle } from 'components/globalStyle';
 import { theme } from 'components/variables';
 
-import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from 'hooks/hooks';
 import { removeAuth, setAuth } from 'actions/user';
 import { getCurrentUser } from 'api/user';
-
-// // 權限驗證
-// import { LoginAuth } from 'components/auth/auth';
 
 // router
 import Header from 'components/header/Header';
@@ -40,15 +37,12 @@ function App() {
   // 權限驗證
   useEffect(() => {
     if (path === '/how-to-use') {
-      navigate(path, { replace: true });
       return;
     }
 
     if (isLogin) {
       if (isLoginCannotEnter) {
         navigate(loginRedirect, { replace: true });
-      } else {
-        navigate(path, { replace: true });
       }
     } else {
       if (tokenInLocal) {
@@ -56,16 +50,16 @@ function App() {
           .then(res => {
             if (res) {
               const { name, email, id } = res;
-              setAuth({
-                token: tokenInLocal,
-                isLogin: true,
-                user: { id, name, email },
-              });
+              dispatch(
+                setAuth({
+                  token: tokenInLocal,
+                  isLogin: true,
+                  user: { id, name, email },
+                })
+              );
 
               if (isLoginCannotEnter) {
                 navigate(loginRedirect, { replace: true });
-              } else {
-                navigate(path, { replace: true });
               }
             }
           })
@@ -73,9 +67,7 @@ function App() {
             dispatch(removeAuth());
             localStorage.removeItem('token');
 
-            if (isLoginCannotEnter) {
-              navigate(path, { replace: true });
-            } else {
+            if (!isLoginCannotEnter) {
               navigate(notLoginRedirect, { replace: true });
             }
           });
@@ -83,9 +75,7 @@ function App() {
         dispatch(removeAuth());
         localStorage.removeItem('token');
 
-        if (isLoginCannotEnter) {
-          navigate(path, { replace: true });
-        } else {
+        if (!isLoginCannotEnter) {
           navigate(notLoginRedirect, { replace: true });
         }
       }
