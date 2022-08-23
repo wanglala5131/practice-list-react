@@ -9,6 +9,9 @@ import { useAppSelector, useAppDispatch } from 'hooks/hooks';
 import { removeAuth, setAuth } from 'actions/user';
 import { getCurrentUser } from 'api/user';
 
+// loading
+import Loading from 'components/Loading';
+
 // router
 import Header from 'components/header/Header';
 import UserCard from 'components/user/UserCard'; // 登入註冊頁面
@@ -29,6 +32,7 @@ function App() {
   const path = location.pathname;
   const tokenInLocal = localStorage.getItem('token');
   const { isLogin } = useAppSelector(state => state.user);
+  const { isLoading } = useAppSelector(state => state.loading);
 
   const isLoginCannotEnter = ['/login', '/register'].includes(path); // 是否為登入後不可進入的頁面
   const loginRedirect = '/';
@@ -111,6 +115,7 @@ function App() {
             <Route path="/how-to-use" element={<HowToUse />} />
           </Routes>
         </div>
+        {isLoading && <Loading />}
       </ThemeProvider>
     </div>
   );
