@@ -270,6 +270,7 @@ type Props = {
   itemDisplay?: string;
   listNavOpenId?: number;
   setListOpenId?: (value: number) => void;
+  changeItemLike?: (id: number, isLike: boolean) => void | undefined;
 };
 
 export default function Item(props: Props) {
@@ -280,6 +281,7 @@ export default function Item(props: Props) {
     itemDisplay = '',
     listNavOpenId,
     setListOpenId,
+    changeItemLike,
   } = props;
 
   const changeNavOpenId = (value: number) => {
@@ -299,7 +301,14 @@ export default function Item(props: Props) {
 
         <CardFixed>
           {!isInClosePage && itemDisplay === 'card' && (
-            <StarIcon className={item.isLiked ? 'active' : ''} />
+            <StarIcon
+              onClick={() => {
+                if (changeItemLike) {
+                  changeItemLike(item.id, item.isLiked);
+                }
+              }}
+              className={item.isLiked ? 'active' : ''}
+            />
           )}
 
           {itemDisplay === 'list' &&

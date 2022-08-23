@@ -1,4 +1,10 @@
 import { AxiosRequestConfig } from 'axios';
+import {
+  ItemType,
+  CartItem,
+  CategoriesType,
+  SubCategoriesType,
+} from 'components/data.type';
 
 export interface AxiosResponseCustom<T = any> {
   data: T;
@@ -7,6 +13,10 @@ export interface AxiosResponseCustom<T = any> {
   headers: any;
   config: AxiosRequestConfig;
   request?: any;
+}
+
+export interface OnlyStatusRes {
+  status: string;
 }
 
 export interface LoginRes {
@@ -20,8 +30,19 @@ export interface RegisterRes {
   message?: string;
 }
 
-export interface currentUserRes {
+export interface CurrentUserRes {
   id: number;
   name: string;
   email: string;
+}
+
+export interface GetItemsRes {
+  cartItems: CartItem[];
+  cartItemsArr: number[];
+  items: ItemType[];
+}
+
+export interface GetCategories {
+  categories: CategoriesType[];
+  subcategories: SubCategoriesType[];
 }

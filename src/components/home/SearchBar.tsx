@@ -2,17 +2,13 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { pad } from 'components/variables';
 
+import { getCategories } from 'api/setting';
+
 import {
   CategoriesType,
   SubCategoriesType,
   ItemType,
 } from 'components/data.type';
-
-// fake data
-import {
-  categories as OriCate,
-  subcategories as OriSub,
-} from 'assets/fake-data/fake';
 
 const CardsSearch = styled.div`
   display: flex;
@@ -182,12 +178,13 @@ export default function searchBar(props: Props) {
   const [categories, setCategories] = useState<CategoriesType[]>([]);
   const [subcategories, setSubcategories] = useState<SubCategoriesType[]>([]);
 
-  // 模擬 api
+  // api
   useEffect(() => {
-    setTimeout(() => {
+    getCategories().then(res => {
+      const { categories: OriCate, subcategories: OriSub } = res;
       setCategories(OriCate);
       setSubcategories(OriSub);
-    }, 800);
+    });
   }, []);
 
   // search bar 顯示的主分類和次分類
@@ -242,6 +239,7 @@ export default function searchBar(props: Props) {
     setCurrentSub([]);
   };
 
+  // TODO: 連接正式站時，觀察是否需要加上loading畫面
   useEffect(() => {
     let filterItems: ItemType[] = oriItems;
     if (isLike) {

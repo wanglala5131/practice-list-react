@@ -102,4 +102,9 @@ html, body {
     max-width: 850px;
   }
 }
+
+.toast-txt {
+  font-size: 18px;
+  font-weight: 500;
+}
 `;

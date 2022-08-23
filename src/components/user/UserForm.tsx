@@ -11,7 +11,6 @@ import { login, register } from 'api/user';
 
 import { useAppDispatch } from 'hooks/hooks';
 import { setAuth } from 'actions/user';
-import { Igloo } from '@styled-icons/fa-solid';
 
 const FormContainer = styled.div`
   padding: 10px 20px 30px 20px;
