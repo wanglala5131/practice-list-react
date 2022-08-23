@@ -60,10 +60,11 @@ type Props = {
   isInClosePage: boolean;
   itemsList: ItemType[];
   cartItemsArr?: number[];
+  changeItemLike?: (id: number, isLike: boolean) => void | undefined;
 };
 
 export default function ItemsWrapper(props: Props) {
-  const { isInClosePage, itemsList, cartItemsArr } = props;
+  const { isInClosePage, itemsList, cartItemsArr, changeItemLike } = props;
 
   const [itemDisplay, setItemDisplay] = useState<string>('');
   const [listNavOpenId, setListOpenId] = useState<number>(0);
@@ -105,6 +106,7 @@ export default function ItemsWrapper(props: Props) {
             itemDisplay={itemDisplay}
             listNavOpenId={listNavOpenId}
             setListOpenId={setListOpenId}
+            changeItemLike={changeItemLike}
           />
         ))}
       </CardsWrapper>

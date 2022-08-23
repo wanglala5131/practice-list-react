@@ -4,7 +4,7 @@ import {
   AxiosResponseCustom,
   LoginRes,
   RegisterRes,
-  currentUserRes,
+  CurrentUserRes,
 } from './response.type';
 
 export const login = (data: LoginReq) => {
@@ -28,5 +28,5 @@ export const getCurrentUser = (token: string) => {
     url: `/users/current`,
     method: 'get',
     headers: { Authorization: `Bearer ${token}` },
-  }).then((res: AxiosResponseCustom<currentUserRes>) => res.data);
+  }).then((res: AxiosResponseCustom<CurrentUserRes>) => res.data);
 };
