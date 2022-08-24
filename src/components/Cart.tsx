@@ -65,7 +65,7 @@ const ListIcon = styled(ListAlt)`
   }
 `;
 
-const Modal = styled.div`
+const Modal = styled.label`
   z-index: -20;
   display: none;
   position: fixed;
@@ -73,6 +73,7 @@ const Modal = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
 `;
 
 const Content = styled.div`
@@ -196,7 +197,7 @@ export default function Cart(props: Props) {
         className="cart-simple-input"
         id="cart-simple-input"
       />
-      <Modal className="card-simple-modal"></Modal>
+      <Modal htmlFor="cart-simple-input" className="card-simple-modal"></Modal>
       <Content className="cart-simple-content">
         <Title>暫定菜單</Title>
         <ul>
