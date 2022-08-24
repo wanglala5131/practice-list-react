@@ -271,6 +271,7 @@ type Props = {
   listNavOpenId?: number;
   setListOpenId?: (value: number) => void;
   changeItemLike?: (id: number, isLike: boolean) => void | undefined;
+  addItemToCart?: (id: number) => void | undefined;
 };
 
 export default function Item(props: Props) {
@@ -282,6 +283,7 @@ export default function Item(props: Props) {
     listNavOpenId,
     setListOpenId,
     changeItemLike,
+    addItemToCart,
   } = props;
 
   const changeNavOpenId = (value: number) => {
@@ -367,6 +369,11 @@ export default function Item(props: Props) {
           <CardButton
             className={itemDisplay === 'list' ? '' : 'cart'}
             disabled={isInCart}
+            onClick={() => {
+              if (addItemToCart) {
+                addItemToCart(item.id);
+              }
+            }}
           >
             {isInCart ? '已加進暫定菜單' : ' 加到暫定菜單中'}
           </CardButton>

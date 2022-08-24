@@ -178,10 +178,11 @@ const RemoveButton = styled.button`
 
 type Props = {
   cartItems: CartItem[];
+  deleteItemInCart: (value: number) => void;
 };
 
 export default function Cart(props: Props) {
-  const { cartItems } = props;
+  const { cartItems, deleteItemInCart } = props;
 
   // TODO: 換頁後要關掉購物車
 
@@ -217,7 +218,10 @@ export default function Cart(props: Props) {
                   ))}
                 </Subcategories>
               </ItemContent>
-              <RemoveButton className="cart-simple-button">
+              <RemoveButton
+                onClick={() => deleteItemInCart(item.id)}
+                className="cart-simple-button"
+              >
                 &times;
               </RemoveButton>
             </Item>

@@ -4,6 +4,7 @@ import { ItemType, CartItem } from 'components/data.type';
 import { useAppDispatch } from 'hooks/hooks';
 import { setLoading } from 'actions/loading';
 import { getItems, changeLike } from 'api/item';
+import { addToCart, deleteCartItem } from 'api/cart';
 
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -48,7 +49,11 @@ export default function Home() {
   const [currentShowItems, setCurrentShowItems] = useState<ItemType[]>([]);
 
   useEffect(() => {
-    getItems()
+    getOriItems();
+  }, []);
+
+  const getOriItems = () => {
+    return getItems()
       .then(res => {
         const {
           items: OriItems,
@@ -69,7 +74,7 @@ export default function Home() {
           text: '發生錯誤，請重試一次',
         });
       });
-  }, []);
+  };
 
   const changeItemLike = (id: number, isLike: boolean) => {
     const currentLike = !isLike;
@@ -113,9 +118,64 @@ export default function Home() {
       });
   };
 
+  const addItemToCart = (id: number) => {
+    dispatch(setLoading(true));
+
+    addToCart(id)
+      .then(res => {
+        if (res.status === 'success') {
+          getOriItems().then(() => {
+            dispatch(setLoading(false));
+            swalAlert.fire({
+              icon: 'success',
+              text: '已加入暫定清單',
+            });
+          });
+        } else {
+          dispatch(setLoading(false));
+          swalAlert.fire({
+            icon: 'error',
+            text: res.message,
+          });
+        }
+      })
+      .catch(() => {
+        dispatch(setLoading(false));
+        swalAlert.fire({
+          icon: 'error',
+          text: '發生錯誤，請重試一次',
+        });
+      });
+    // getOriItems();
+  };
+
+  const deleteItemInCart = (id: number) => {
+    dispatch(setLoading(true));
+
+    deleteCartItem(id)
+      .then(res => {
+        if (res.status === 'success') {
+          getOriItems().then(() => {
+            dispatch(setLoading(false));
+            swalAlert.fire({
+              icon: 'success',
+              text: '已將此項目自暫定清單中移除',
+            });
+          });
+        }
+      })
+      .catch(() => {
+        dispatch(setLoading(false));
+        swalAlert.fire({
+          icon: 'error',
+          text: '發生錯誤，請重試一次',
+        });
+      });
+  };
+
   return (
     <>
-      <Cart cartItems={cartItems} />
+      <Cart cartItems={cartItems} deleteItemInCart={deleteItemInCart} />
       <Banner
         bannerImg={pageData.bannerImg}
         title={pageData.title}
@@ -129,6 +189,7 @@ export default function Home() {
         itemsList={currentShowItems}
         cartItemsArr={cartItemsArr}
         changeItemLike={changeItemLike}
+        addItemToCart={addItemToCart}
       />
     </>
   );

@@ -17,6 +17,7 @@ export interface AxiosResponseCustom<T = any> {
 
 export interface OnlyStatusRes {
   status: string;
+  message?: string;
 }
 
 export interface LoginRes {

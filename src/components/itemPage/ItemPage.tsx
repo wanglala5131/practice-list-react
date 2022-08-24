@@ -187,9 +187,13 @@ export default function Item() {
     console.log(action);
   };
 
+  const deleteItemInCart = (id: number) => {
+    console.log(id);
+  };
+
   return (
     <>
-      <Cart cartItems={cartItems} />
+      <Cart cartItems={cartItems} deleteItemInCart={deleteItemInCart} />
       <Banner
         bannerImg={pageData.bannerImg}
         title={item?.name || '---'}
