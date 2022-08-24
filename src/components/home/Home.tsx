@@ -66,9 +66,7 @@ export default function Home() {
         setCartItems(OriCartItems);
         setCartItemsArr(OriCartItemsArr);
       })
-      .catch(err => {
-        console.log(err);
-
+      .catch(() => {
         swalAlert.fire({
           icon: 'error',
           text: '發生錯誤，請重試一次',
@@ -105,9 +103,7 @@ export default function Home() {
           });
         }
       })
-      .catch(err => {
-        console.log(err);
-
+      .catch(() => {
         swalAlert.fire({
           icon: 'error',
           text: '發生錯誤，請重試一次',
@@ -146,7 +142,6 @@ export default function Home() {
           text: '發生錯誤，請重試一次',
         });
       });
-    // getOriItems();
   };
 
   const deleteItemInCart = (id: number) => {

@@ -2,6 +2,7 @@ import apiHelper from 'helpers/api';
 import {
   AxiosResponseCustom,
   GetItemsRes,
+  GetItemRes,
   OnlyStatusRes,
 } from './response.type';
 
@@ -17,4 +18,11 @@ export const changeLike = (id: number) => {
     url: `/items/like/${id}`,
     method: 'patch',
   }).then((res: AxiosResponseCustom<OnlyStatusRes>) => res.data);
+};
+
+export const getItem = (id: number) => {
+  return apiHelper({
+    url: `/items/${id}`,
+    method: 'get',
+  }).then((res: AxiosResponseCustom<GetItemRes>) => res.data);
 };

@@ -47,3 +47,11 @@ export interface GetCategories {
   categories: CategoriesType[];
   subcategories: SubCategoriesType[];
 }
+
+export interface GetItemRes {
+  status: string;
+  cartItems: CartItem[];
+  cartItemsArr: number[];
+  item: ItemType;
+  message?: string;
+}

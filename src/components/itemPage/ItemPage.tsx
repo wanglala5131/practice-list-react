@@ -1,24 +1,37 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { Star } from '@styled-icons/fa-solid';
 import { pad } from 'components/variables';
 
+import { useAppDispatch } from 'hooks/hooks';
+import { setLoading } from 'actions/loading';
 import { CartItem, ItemType } from 'components/data.type';
+import { getItem, changeLike } from 'api/item';
+import { addToCart, deleteCartItem } from 'api/cart';
+
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 import Cart from 'components/Cart';
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/item-page.jpeg';
 
-// fake data
-import {
-  item as OriItem,
-  cartItems as OriCartItems,
-  cartItemsArr as OriCartItemsArr,
-} from 'assets/fake-data/fake';
+const StarIcon = styled(Star)`
+  color: ${props => props.theme.yellow};
+`;
 
 const ItemSection = styled.section`
   padding: 10px 0;
   font-size: 18px;
+
+  &:last-child {
+    padding-bottom: 50px;
+
+    @media ${pad} {
+      padding-bottom: 100px;
+    }
+  }
 
   @media ${pad} {
     padding-bottom: 20px;
@@ -85,7 +98,11 @@ const CloseTxt = styled.p`
 // TODO:星號封存按鈕
 
 export default function Item() {
-  let { id } = useParams();
+  const dispatch = useAppDispatch();
+  const swalAlert = withReactContent(Swal);
+  const navigate = useNavigate();
+  const { id: itemId } = useParams();
+
   const pageData = {
     bannerImg,
     title: '訓練項目',
@@ -103,12 +120,12 @@ export default function Item() {
         url: '',
         class: 'default',
         type: 'button',
-        action: 'add-star',
+        action: 'change-star',
         disabled: false,
       },
       {
         name: '編輯',
-        url: `/edit/${id}`,
+        url: `/edit/${itemId}`,
         class: 'default',
         type: 'link',
         action: 'edit',
@@ -138,14 +155,40 @@ export default function Item() {
   const [cartItemsArr, setCartItemsArr] = useState<number[]>([]);
   const [pageButtons, setPageButtons] = useState(pageData.buttons);
 
-  // 模擬 api
   useEffect(() => {
-    setTimeout(() => {
-      setItem(OriItem);
-      setCartItems(OriCartItems);
-      setCartItemsArr(OriCartItemsArr);
-    }, 500);
+    getOriItem();
   }, []);
+
+  const getOriItem = () => {
+    return getItem(Number(itemId))
+      .then(res => {
+        if (res.status === 'success') {
+          const {
+            item: OriItem,
+            cartItems: OriCartItems,
+            cartItemsArr: OriCartItemsArr,
+          } = res;
+          setItem(OriItem);
+          setCartItems(OriCartItems);
+          setCartItemsArr(OriCartItemsArr);
+        } else {
+          swalAlert
+            .fire({
+              icon: 'error',
+              text: `${res.message}，將返回上一頁`,
+            })
+            .then(() => {
+              navigate(-1);
+            });
+        }
+      })
+      .catch(() => {
+        swalAlert.fire({
+          icon: 'error',
+          text: '發生錯誤，請重試一次',
+        });
+      });
+  };
 
   useEffect(() => {
     if (item) {
@@ -183,12 +226,124 @@ export default function Item() {
     }
   }, [cartItemsArr]);
 
+  useEffect(() => {
+    setPageButtons(
+      pageButtons.map(button => {
+        if (button.action === 'change-star') {
+          button.name = item?.isLiked ? '移除星號' : '添加星號';
+        }
+
+        return button;
+      })
+    );
+  }, [item?.isLiked]);
+
   const buttonAction = (action: string) => {
-    console.log(action);
+    if (!item) return;
+
+    if (action === 'add-temp') {
+      if (cartItemsArr.includes(item?.id)) {
+        const itemInCart = cartItems.find(
+          cartItem => cartItem.ItemId === item.id
+        );
+
+        if (itemInCart) {
+          deleteItemInCart(itemInCart.id);
+        }
+      } else {
+        addItemToCart(item.id);
+      }
+    } else if (action === 'change-star') {
+      changeItemLike(item.id);
+    }
+  };
+
+  const changeItemLike = (id: number) => {
+    dispatch(setLoading(true));
+
+    changeLike(id)
+      .then(res => {
+        if (res.status === 'success') {
+          if (!item) return;
+
+          item.isLiked = !item.isLiked;
+
+          swalAlert.fire({
+            icon: 'success',
+            html: `<p class="toast-txt">
+            ${item.isLiked ? '加星號成功' : '已移除星號'}<p>`,
+            toast: true,
+            position: 'top',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            color: '#6fa96f', // fontGreen
+          });
+        }
+      })
+      .catch(() => {
+        swalAlert.fire({
+          icon: 'error',
+          text: '發生錯誤，請重試一次',
+        });
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
+  };
+
+  const addItemToCart = (id: number) => {
+    dispatch(setLoading(true));
+
+    addToCart(id)
+      .then(res => {
+        if (res.status === 'success') {
+          getOriItem().then(() => {
+            dispatch(setLoading(false));
+            swalAlert.fire({
+              icon: 'success',
+              text: '已加入暫定清單',
+            });
+          });
+        } else {
+          dispatch(setLoading(false));
+          swalAlert.fire({
+            icon: 'error',
+            text: res.message,
+          });
+        }
+      })
+      .catch(() => {
+        dispatch(setLoading(false));
+        swalAlert.fire({
+          icon: 'error',
+          text: '發生錯誤，請重試一次',
+        });
+      });
   };
 
   const deleteItemInCart = (id: number) => {
-    console.log(id);
+    dispatch(setLoading(true));
+
+    deleteCartItem(id)
+      .then(res => {
+        if (res.status === 'success') {
+          getOriItem().then(() => {
+            dispatch(setLoading(false));
+            swalAlert.fire({
+              icon: 'success',
+              text: '已將此項目自暫定清單中移除',
+            });
+          });
+        }
+      })
+      .catch(() => {
+        dispatch(setLoading(false));
+        swalAlert.fire({
+          icon: 'error',
+          text: '發生錯誤，請重試一次',
+        });
+      });
   };
 
   return (
@@ -196,7 +351,7 @@ export default function Item() {
       <Cart cartItems={cartItems} deleteItemInCart={deleteItemInCart} />
       <Banner
         bannerImg={pageData.bannerImg}
-        title={item?.name || '---'}
+        title={item?.isLiked ? `★ ${item?.name}` : item?.name || '---'}
         buttons={pageButtons}
         buttonAction={buttonAction}
         hasCart={true}
