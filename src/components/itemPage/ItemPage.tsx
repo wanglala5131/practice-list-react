@@ -1,25 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Star } from '@styled-icons/fa-solid';
 import { pad } from 'components/variables';
 
+import { toastAlert, swalAlert } from 'helpers/alert';
 import { useAppDispatch } from 'hooks/hooks';
 import { setLoading } from 'actions/loading';
 import { CartItem, ItemType } from 'components/data.type';
 import { getItem, changeLike } from 'api/item';
 import { addToCart, deleteCartItem } from 'api/cart';
 
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-
 import Cart from 'components/Cart';
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/item-page.jpeg';
-
-const StarIcon = styled(Star)`
-  color: ${props => props.theme.yellow};
-`;
 
 const ItemSection = styled.section`
   padding: 10px 0;
@@ -99,7 +92,6 @@ const CloseTxt = styled.p`
 
 export default function Item() {
   const dispatch = useAppDispatch();
-  const swalAlert = withReactContent(Swal);
   const navigate = useNavigate();
   const { id: itemId } = useParams();
 
@@ -172,21 +164,13 @@ export default function Item() {
           setCartItems(OriCartItems);
           setCartItemsArr(OriCartItemsArr);
         } else {
-          swalAlert
-            .fire({
-              icon: 'error',
-              text: `${res.message}，將返回上一頁`,
-            })
-            .then(() => {
-              navigate(-1);
-            });
+          swalAlert(`${res.message}，將返回上一頁`).then(() => {
+            navigate(-1);
+          });
         }
       })
       .catch(() => {
-        swalAlert.fire({
-          icon: 'error',
-          text: '發生錯誤，請重試一次',
-        });
+        swalAlert('發生錯誤，請重試一次');
       });
   };
 
@@ -267,25 +251,11 @@ export default function Item() {
           if (!item) return;
 
           item.isLiked = !item.isLiked;
-
-          swalAlert.fire({
-            icon: 'success',
-            html: `<p class="toast-txt">
-            ${item.isLiked ? '加星號成功' : '已移除星號'}<p>`,
-            toast: true,
-            position: 'top',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            color: '#6fa96f', // fontGreen
-          });
+          toastAlert(item.isLiked ? '加星號成功' : '已移除星號');
         }
       })
       .catch(() => {
-        swalAlert.fire({
-          icon: 'error',
-          text: '發生錯誤，請重試一次',
-        });
+        swalAlert('發生錯誤，請重試一次');
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -300,25 +270,16 @@ export default function Item() {
         if (res.status === 'success') {
           getOriItem().then(() => {
             dispatch(setLoading(false));
-            swalAlert.fire({
-              icon: 'success',
-              text: '已加入暫定清單',
-            });
+            toastAlert('已加入暫定清單');
           });
         } else {
           dispatch(setLoading(false));
-          swalAlert.fire({
-            icon: 'error',
-            text: res.message,
-          });
+          swalAlert(res.message || '發生錯誤，請重試一次');
         }
       })
       .catch(() => {
         dispatch(setLoading(false));
-        swalAlert.fire({
-          icon: 'error',
-          text: '發生錯誤，請重試一次',
-        });
+        swalAlert('發生錯誤，請重試一次');
       });
   };
 
@@ -330,19 +291,13 @@ export default function Item() {
         if (res.status === 'success') {
           getOriItem().then(() => {
             dispatch(setLoading(false));
-            swalAlert.fire({
-              icon: 'success',
-              text: '已將此項目自暫定清單中移除',
-            });
+            toastAlert('已將此項目自暫定清單中移除');
           });
         }
       })
       .catch(() => {
         dispatch(setLoading(false));
-        swalAlert.fire({
-          icon: 'error',
-          text: '發生錯誤，請重試一次',
-        });
+        swalAlert('發生錯誤，請重試一次');
       });
   };
 

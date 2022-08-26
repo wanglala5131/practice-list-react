@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ItemType, CartItem } from 'components/data.type';
 
+import { toastAlert, swalAlert } from 'helpers/alert';
 import { useAppDispatch } from 'hooks/hooks';
 import { setLoading } from 'actions/loading';
 import { getItems, changeLike } from 'api/item';
 import { addToCart, deleteCartItem } from 'api/cart';
-
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/index-page.jpeg';
@@ -40,7 +38,6 @@ const pageData = {
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const swalAlert = withReactContent(Swal);
 
   // 原始資料
   const [items, setItems] = useState<ItemType[]>([]);
@@ -67,10 +64,7 @@ export default function Home() {
         setCartItemsArr(OriCartItemsArr);
       })
       .catch(() => {
-        swalAlert.fire({
-          icon: 'error',
-          text: '發生錯誤，請重試一次',
-        });
+        swalAlert('發生錯誤，請重試一次');
       });
   };
 
@@ -90,24 +84,11 @@ export default function Home() {
             })
           );
 
-          swalAlert.fire({
-            icon: 'success',
-            html: `<p class="toast-txt">
-            ${currentLike ? '加星號成功' : '已移除星號'}<p>`,
-            toast: true,
-            position: 'top',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            color: '#6fa96f', // fontGreen
-          });
+          toastAlert(currentLike ? '加星號成功' : '已移除星號');
         }
       })
       .catch(() => {
-        swalAlert.fire({
-          icon: 'error',
-          text: '發生錯誤，請重試一次',
-        });
+        swalAlert('發生錯誤，請重試一次');
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -122,25 +103,16 @@ export default function Home() {
         if (res.status === 'success') {
           getOriItems().then(() => {
             dispatch(setLoading(false));
-            swalAlert.fire({
-              icon: 'success',
-              text: '已加入暫定清單',
-            });
+            toastAlert('已加入暫定清單');
           });
         } else {
           dispatch(setLoading(false));
-          swalAlert.fire({
-            icon: 'error',
-            text: res.message,
-          });
+          swalAlert(res.message || '發生錯誤，請重試一次');
         }
       })
       .catch(() => {
         dispatch(setLoading(false));
-        swalAlert.fire({
-          icon: 'error',
-          text: '發生錯誤，請重試一次',
-        });
+        swalAlert('發生錯誤，請重試一次');
       });
   };
 
@@ -152,19 +124,13 @@ export default function Home() {
         if (res.status === 'success') {
           getOriItems().then(() => {
             dispatch(setLoading(false));
-            swalAlert.fire({
-              icon: 'success',
-              text: '已將此項目自暫定清單中移除',
-            });
+            toastAlert('已將此項目自暫定清單中移除');
           });
         }
       })
       .catch(() => {
         dispatch(setLoading(false));
-        swalAlert.fire({
-          icon: 'error',
-          text: '發生錯誤，請重試一次',
-        });
+        swalAlert('發生錯誤，請重試一次');
       });
   };
 
