@@ -1,17 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { pad, inputStyle, buttonStyle } from 'components/variables';
 
+import { toastAlert, swalAlert, confirmAlert } from 'helpers/alert';
+import { SubCategoriesType, CategoriesType } from 'components/data.type';
+import { useAppDispatch } from 'hooks/hooks';
+import { setLoading } from 'actions/loading';
+import {
+  getSubcategories,
+  getCategories,
+  addCategory,
+  addSubcategory,
+  deleteCategory,
+  deleteSubcategory,
+  putCategory,
+  putSubcategory,
+} from 'api/setting';
+
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/setting-page.jpeg';
-
-import { SubCategoriesType, CategoriesType } from 'components/data.type';
-
-// fake
-import {
-  subcategories as oriSubcategories,
-  categories as oriCategories,
-} from 'assets/fake-data/fake';
+import { string } from 'yup';
 
 const SettingContainer = styled.div`
   width: 100%;
@@ -194,38 +202,23 @@ type Props = {
 
 export default function Setting(props: Props) {
   const { settingType } = props;
+  const dispatch = useAppDispatch();
 
   const [pageButtons, setPageButtons] = useState(pageData.buttons);
   const [categories, setCategories] = useState<CategoriesType[]>([]);
+  const addInput = useRef<HTMLInputElement>(null);
+  const addSelect = useRef<HTMLSelectElement>(null);
 
   const [currentData, setCurrentData] = useState<
     SubCategoriesType[] | CategoriesType[]
   >([]);
-  const [currentEditId, setCUrrentEditId] = useState<number>(0);
+  const [currentEditId, setCurrentEditId] = useState<number>(0);
   const [createValue, setCreateValue] = useState<string>('');
-  const [selectValue, setSelectValue] = useState<string>('');
+  const [selectValue, setSelectValue] = useState<string>('-1');
 
   // api
   useEffect(() => {
-    if (settingType === 'subcategory') {
-      setTimeout(() => {
-        setCurrentData(
-          oriSubcategories.map(subcategory => ({
-            ...subcategory,
-            hasItems: subcategory.Items?.length > 0,
-          }))
-        );
-        setCategories(oriCategories);
-      }, 1000);
-    } else {
-      setCurrentData(
-        oriCategories.map(category => ({
-          ...category,
-          hasItems: category.Subcategories?.length > 0,
-        }))
-      );
-      setCategories(oriCategories);
-    }
+    getSetting();
   }, []);
 
   useEffect(() => {
@@ -236,10 +229,50 @@ export default function Setting(props: Props) {
         return button;
       })
     );
+    getSetting();
   }, [settingType]);
 
+  const getSetting = () => {
+    if (settingType === 'subcategory') {
+      return getSubcategories()
+        .then(res => {
+          const { categories: oriCategories, subcategories: oriSubcategories } =
+            res;
+
+          setCurrentData(
+            oriSubcategories.map(subcategory => ({
+              ...subcategory,
+              hasItems: subcategory.Items
+                ? subcategory.Items?.length > 0
+                : false,
+            }))
+          );
+          setCategories(oriCategories);
+        })
+        .catch(() => {
+          swalAlert('發生錯誤，請重試一次');
+        });
+    } else {
+      return getCategories()
+        .then(res => {
+          setCurrentData(
+            res.map(category => ({
+              ...category,
+              hasItems: category.Subcategories
+                ? category.Subcategories?.length > 0
+                : false,
+            }))
+          );
+          setCategories(res);
+        })
+        .catch(() => {
+          swalAlert('發生錯誤，請重試一次');
+        });
+    }
+  };
+
   const changeEdit = (id: number) => {
-    setCUrrentEditId(id);
+    setCurrentEditId(id);
   };
 
   const changeCreateValue = (value: string) => {
@@ -247,9 +280,114 @@ export default function Setting(props: Props) {
   };
 
   const submit = () => {
-    // TODO: 沒填值防呆 & 根據settingType送api
-    console.log(createValue);
-    console.log(selectValue);
+    if (!createValue || (!selectValue && settingType === 'subcategory')) {
+      swalAlert('請填入資料');
+      return;
+    }
+
+    dispatch(setLoading(true));
+    addApi(createValue, selectValue)
+      .then(res => {
+        if (res) {
+          getSetting().then(() => {
+            toastAlert('新增成功');
+            resetAddInput();
+          });
+        }
+      })
+      .catch(() => {
+        swalAlert('發生錯誤，請重試一次');
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
+  };
+
+  const addApi = (createValue: string, selectValue: string) => {
+    if (settingType === 'subcategory') {
+      return addSubcategory({
+        name: createValue,
+        CategoryId: Number(selectValue),
+      });
+    } else {
+      return addCategory({ name: createValue });
+    }
+  };
+
+  const resetAddInput = () => {
+    if (addInput.current) {
+      addInput.current.value = '';
+    }
+
+    if (addSelect.current) {
+      addSelect.current.value = '-1';
+    }
+  };
+
+  const deleteItem = (id: number, name: string) => {
+    confirmAlert(`確定要刪除「${name}」嗎`).then(result => {
+      if (result.isConfirmed) {
+        dispatch(setLoading(true));
+        const deleteApi =
+          settingType === 'subcategory' ? deleteSubcategory : deleteCategory;
+
+        deleteApi(id)
+          .then(res => {
+            if (res.status === 'success') {
+              getSetting().then(() => {
+                toastAlert('刪除成功');
+              });
+            } else {
+              swalAlert(res.message || '發生錯誤，請重試一次');
+            }
+          })
+          .catch(() => {
+            swalAlert('發生錯誤，請重試一次');
+          })
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
+      }
+    });
+  };
+
+  const changeValue = (
+    id: number,
+    value: { name?: string; CategoryId?: number }
+  ) => {
+    if (!!value.name && value.name === '') {
+      swalAlert('請填入資料');
+      return;
+    }
+
+    dispatch(setLoading(true));
+
+    putApi(id, value)
+      .then(res => {
+        if (res.status === 'success') {
+          getSetting().then(() => {
+            toastAlert('修改成功');
+          });
+        } else {
+          swalAlert(res.message || '發生錯誤，請重試一次');
+        }
+      })
+      .catch(() => {
+        swalAlert('發生錯誤，請重試一次');
+      })
+      .finally(() => {
+        changeEdit(0);
+        dispatch(setLoading(false));
+      });
+  };
+
+  const putApi = (
+    id: number,
+    value: { name?: string; CategoryId?: number }
+  ) => {
+    return settingType === 'subcategory'
+      ? putSubcategory(id, value)
+      : putCategory(id, { name: value.name || '' });
   };
 
   return (
@@ -263,11 +401,16 @@ export default function Setting(props: Props) {
 
       <SettingContainer>
         <div>
-          <PageSubtitle>新增項目類型</PageSubtitle>
+          <PageSubtitle>
+            新增{settingType === 'subcategory' ? '項目類型' : '運動類別'}
+          </PageSubtitle>
           <CreateArea>
             <input
+              ref={addInput}
               type="text"
-              placeholder="填入類型名稱"
+              placeholder={`填入${
+                settingType === 'subcategory' ? '項目類型' : '運動類別'
+              }`}
               onChange={e => {
                 changeCreateValue(e.target.value);
               }}
@@ -276,6 +419,7 @@ export default function Setting(props: Props) {
               <select
                 name="add-select"
                 id="add-select"
+                ref={addSelect}
                 onChange={e => {
                   setSelectValue(e.target.value);
                 }}
@@ -290,13 +434,22 @@ export default function Setting(props: Props) {
                 ))}
               </select>
             )}
-            <button onClick={submit}>新增</button>
+            <button
+              onClick={submit}
+              disabled={
+                !createValue || (!selectValue && settingType === 'subcategory')
+              }
+            >
+              新增
+            </button>
           </CreateArea>
         </div>
 
         <ListArea>
           <div className="setting-table-title">
-            <PageSubtitle>目前的項目類型</PageSubtitle>
+            <PageSubtitle>
+              目前的{settingType === 'subcategory' ? '項目類型' : '運動類別'}
+            </PageSubtitle>
             <Remind>
               {settingType === 'subcategory'
                 ? '點兩下可編輯名稱，若此項目尚有「運動項目」，則無法改變運動類別與刪除'
@@ -322,9 +475,10 @@ export default function Setting(props: Props) {
                   name="subcategory"
                   defaultValue={item.name}
                   onBlur={e => {
-                    changeEdit(0);
                     if (item.name !== e.target.value) {
-                      console.log(e.target.value);
+                      changeValue(item.id, { name: e.target.value });
+                    } else {
+                      changeEdit(0);
                     }
                   }}
                 />
@@ -338,8 +492,11 @@ export default function Setting(props: Props) {
                     disabled={item.hasItems}
                     defaultValue={item.CategoryId}
                     onChange={e => {
-                      // TODO: 要防呆避免有item的送出去
-                      console.log(e.target.value);
+                      if (item.hasItems) return;
+
+                      changeValue(item.id, {
+                        CategoryId: Number(e.target.value),
+                      });
                     }}
                   >
                     {categories.map(category => (
@@ -352,7 +509,11 @@ export default function Setting(props: Props) {
               )}
 
               <ItemButton className={settingType}>
-                {item.hasItems || <button>&times;</button>}
+                {item.hasItems || (
+                  <button onClick={() => deleteItem(item.id, item.name)}>
+                    &times;
+                  </button>
+                )}
               </ItemButton>
             </ListItem>
           ))}

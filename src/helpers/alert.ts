@@ -22,3 +22,16 @@ export const swalAlert = (msg: string, icon: SweetAlertIcon = 'error') => {
     text: msg,
   });
 };
+
+export const confirmAlert = (
+  msg: string,
+  confirmTxt: string = '確認',
+  cancelTxt: string = '取消'
+) => {
+  return Swal.fire({
+    html: `<p class="confirm-txt">${msg}<p>`,
+    showCancelButton: true,
+    confirmButtonText: confirmTxt,
+    cancelButtonText: cancelTxt,
+  });
+};

@@ -43,9 +43,19 @@ export interface GetItemsRes {
   items: ItemType[];
 }
 
-export interface GetCategories {
+export interface GetSubcategoriesRes {
   categories: CategoriesType[];
   subcategories: SubCategoriesType[];
+}
+
+export interface GetCategoriesRes extends Array<CategoriesType> {}
+
+export interface addCategoryRes {
+  UserId: number;
+  createdAt: string;
+  id: number;
+  name: string;
+  updatedAt: string;
 }
 
 export interface GetItemRes {
@@ -54,4 +64,10 @@ export interface GetItemRes {
   cartItemsArr: number[];
   item: ItemType;
   message?: string;
+}
+
+export interface putCategoryRes {
+  status: string;
+  message?: string;
+  putCategory: CategoriesType;
 }

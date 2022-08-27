@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { pad } from 'components/variables';
 
-import { getCategories } from 'api/setting';
+import { getSubcategories } from 'api/setting';
 
 import {
   CategoriesType,
@@ -180,7 +180,7 @@ export default function searchBar(props: Props) {
 
   // api
   useEffect(() => {
-    getCategories().then(res => {
+    getSubcategories().then(res => {
       const { categories: OriCate, subcategories: OriSub } = res;
       setCategories(OriCate);
       setSubcategories(OriSub);

@@ -107,4 +107,10 @@ html, body {
   font-size: 18px;
   font-weight: 500;
 }
+
+.confirm-txt {
+  padding-top: 20px;
+  font-size: 20px;
+  font-weight: 500;
+}
 `;
