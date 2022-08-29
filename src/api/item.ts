@@ -26,3 +26,19 @@ export const getItem = (id: number) => {
     method: 'get',
   }).then((res: AxiosResponseCustom<GetItemRes>) => res.data);
 };
+
+export const addItem = (data: FormData) => {
+  return apiHelper({
+    url: `/items`,
+    method: 'post',
+    data,
+  }).then((res: AxiosResponseCustom<OnlyStatusRes>) => res.data);
+};
+
+export const putItem = (id: number, data: FormData) => {
+  return apiHelper({
+    url: `/items/${id}`,
+    method: 'put',
+    data,
+  }).then((res: AxiosResponseCustom<OnlyStatusRes>) => res.data);
+};

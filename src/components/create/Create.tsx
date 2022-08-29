@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { pad } from 'components/variables';
+
 import { formDataType } from './form.type';
+import { useAppDispatch } from 'hooks/hooks';
+import { setLoading } from 'actions/loading';
+import { swalAlert } from 'helpers/alert';
+import { getItem } from 'api/item';
 
 import BackgroundImage from 'components/BackgroundImage';
 import ItemsForm from './ItemsForm';
-
-// fake
-import { item } from 'assets/fake-data/fake';
 
 const Container = styled.div`
   padding: 30px 10px;
@@ -41,6 +43,7 @@ const initialValues = {
 };
 
 export default function Create(props: Props) {
+  const dispatch = useAppDispatch();
   const { isCreate } = props;
   const [currentData, setCurrentData] = useState<formDataType>(initialValues);
 
@@ -48,21 +51,30 @@ export default function Create(props: Props) {
 
   useEffect(() => {
     if (!isCreate) {
-      console.log(id);
-      setTimeout(() => {
-        const data = {
-          name: item.name + id,
-          category: item.Category.id,
-          subcategories: item.Subcategories.map(subcategory =>
-            String(subcategory.id)
-          ),
-          limit: item.limit,
-          description: item.description,
-          file: item.image,
-        };
+      dispatch(setLoading(true));
+      getItem(Number(id))
+        .then(res => {
+          const { item } = res;
 
-        setCurrentData(data);
-      }, 1010);
+          const data = {
+            name: item.name + id,
+            category: item.Category.id,
+            subcategories: item.Subcategories.map(subcategory =>
+              String(subcategory.id)
+            ),
+            limit: item.limit,
+            description: item.description,
+            file: item.image || '',
+          };
+
+          setCurrentData(data);
+        })
+        .catch(() => {
+          swalAlert('發生錯誤，請重試一次');
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
     }
   }, []);
 

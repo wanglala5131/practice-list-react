@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { pad, inputStyle, buttonStyle } from 'components/variables';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { object, string, number, array } from 'yup';
 
+import { toastAlert, swalAlert, confirmAlert } from 'helpers/alert';
+import { useAppDispatch } from 'hooks/hooks';
+import { setLoading } from 'actions/loading';
 import { SubCategoriesType, CategoriesType } from 'components/data.type';
 import { formDataType } from './form.type';
-
-// fake
-import { categories, subcategories } from 'assets/fake-data/fake';
+import { getSubcategories } from 'api/setting';
+import { addItem, putItem } from 'api/item';
 
 const FormContainer = styled.div`
   width: 100%;
@@ -170,6 +172,13 @@ const FormButton = styled.div`
   }
 `;
 
+const ImgNote = styled.p`
+  font-size: 16px;
+  color: ${props => props.theme.red};
+  padding-top: 10px;
+  line-height: 1.2;
+`;
+
 const validationSchema = {
   name: string().required('此欄位為必填').max(255, '最多 255 字'),
   category: number().required('此欄位為必填'),
@@ -184,6 +193,10 @@ type Props = {
 };
 
 export default function ItemsForm(props: Props) {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const { id } = useParams();
   const { item, isCreate } = props;
   const [oriCategories, setOriCategories] = useState<CategoriesType[]>([]);
   const [oriSubcategories, setOriSubcategories] = useState<SubCategoriesType[]>(
@@ -196,10 +209,11 @@ export default function ItemsForm(props: Props) {
   const [currentImgUrl, setCurrentImgUrl] = useState<string>('');
 
   useEffect(() => {
-    setTimeout(() => {
+    getSubcategories().then(res => {
+      const { categories, subcategories } = res;
       setOriCategories(categories);
       setOriSubcategories(subcategories);
-    }, 800);
+    });
   }, []);
 
   useEffect(() => {
@@ -259,20 +273,65 @@ export default function ItemsForm(props: Props) {
     setCurrentImgUrl(imageURL);
   };
 
+  const submit = (
+    values: formDataType,
+    setSubmitting: (isSubmitting: boolean) => void
+  ) => {
+    confirmAlert(
+      '如果有上傳圖片，則需等待一小段時間，請問確定要送出表單嗎？'
+    ).then(result => {
+      if (result.isConfirmed) {
+        setSubmitting(true);
+        const data = new FormData();
+        data.append('name', values.name);
+        data.append('CategoryId', String(values.category));
+        data.append('limit', values.limit);
+        data.append('description', values.description);
+        // @ts-ignore
+        data.append('image', currentImg);
+
+        values.subcategories.map(subcategory => {
+          data.append('subcategoriesArr', subcategory);
+        });
+
+        dispatch(setLoading(true));
+
+        submitApi(data)
+          .then(res => {
+            if (res.status === 'success') {
+              toastAlert('建立成功');
+              navigate(isCreate ? '/' : `/${id}`);
+            }
+          })
+          .catch(() => {
+            swalAlert('發生錯誤，請重試一次');
+          })
+          .finally(() => {
+            dispatch(setLoading(false));
+            setSubmitting(false);
+          });
+      }
+    });
+  };
+
+  const submitApi = (data: FormData) => {
+    if (isCreate) {
+      return addItem(data);
+    } else {
+      return putItem(Number(id), data);
+    }
+  };
+
   return (
     <Formik
       initialValues={item}
       validationSchema={object(validationSchema)}
       onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          console.log(values);
-          console.log(currentImg);
-          setSubmitting(false);
-        }, 500);
+        submit(values, setSubmitting);
       }}
       enableReinitialize={true}
     >
-      {({ values, setFieldValue }) => (
+      {({ values, setFieldValue, isSubmitting }) => (
         <Form>
           <FormContainer>
             <h2>{isCreate ? '新增' : '編輯'}項目</h2>
@@ -364,9 +423,10 @@ export default function ItemsForm(props: Props) {
 
             <InputBox>
               <ItemLabel htmlFor="image">相關圖片</ItemLabel>
+              <ImgNote>如果圖片過大(超過10MB)，可能造成上傳失敗</ImgNote>
               <input
                 id="image"
-                name="image"
+                name="file"
                 type="file"
                 accept="image/*"
                 onChange={e => {
@@ -387,7 +447,7 @@ export default function ItemsForm(props: Props) {
               </Link>
               {item.file && <button className="delete">只刪除圖片</button>}
               <button className="submit" type="submit">
-                送出表單
+                {isSubmitting ? '送出中' : '送出表單'}
               </button>
             </FormButton>
           </FormContainer>
