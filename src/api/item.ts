@@ -13,6 +13,13 @@ export const getItems = () => {
   }).then((res: AxiosResponseCustom<GetItemsRes>) => res.data);
 };
 
+export const getCloseItems = () => {
+  return apiHelper({
+    url: `/items/close`,
+    method: 'get',
+  }).then((res: AxiosResponseCustom<GetItemsRes>) => res.data);
+};
+
 export const changeLike = (id: number) => {
   return apiHelper({
     url: `/items/like/${id}`,
@@ -40,5 +47,12 @@ export const putItem = (id: number, data: FormData) => {
     url: `/items/${id}`,
     method: 'put',
     data,
+  }).then((res: AxiosResponseCustom<OnlyStatusRes>) => res.data);
+};
+
+export const toggleCloseItem = (id: number) => {
+  return apiHelper({
+    url: `/items/${id}}/close`,
+    method: 'patch',
   }).then((res: AxiosResponseCustom<OnlyStatusRes>) => res.data);
 };

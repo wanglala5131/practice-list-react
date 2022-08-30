@@ -62,6 +62,7 @@ type Props = {
   cartItemsArr?: number[];
   changeItemLike?: (id: number, isLike: boolean) => void | undefined;
   addItemToCart?: (id: number) => void | undefined;
+  closeItem: (id: number, name: string) => void | undefined;
 };
 
 export default function ItemsWrapper(props: Props) {
@@ -71,6 +72,7 @@ export default function ItemsWrapper(props: Props) {
     cartItemsArr,
     changeItemLike,
     addItemToCart,
+    closeItem,
   } = props;
 
   const [itemDisplay, setItemDisplay] = useState<string>('');
@@ -115,6 +117,7 @@ export default function ItemsWrapper(props: Props) {
             setListOpenId={setListOpenId}
             changeItemLike={changeItemLike}
             addItemToCart={addItemToCart}
+            closeItem={closeItem}
           />
         ))}
       </CardsWrapper>

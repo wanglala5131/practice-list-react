@@ -3,16 +3,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { pad } from 'components/variables';
 
-import { toastAlert, swalAlert } from 'helpers/alert';
+import { toastAlert, swalAlert, confirmAlert } from 'helpers/alert';
 import { useAppDispatch } from 'hooks/hooks';
 import { setLoading } from 'actions/loading';
 import { CartItem, ItemType } from 'components/data.type';
-import { getItem, changeLike } from 'api/item';
+import { getItem, changeLike, toggleCloseItem } from 'api/item';
 import { addToCart, deleteCartItem } from 'api/cart';
 
 import Cart from 'components/Cart';
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/item-page.jpeg';
+import { closeItems } from 'assets/fake-data/fake';
 
 const ItemSection = styled.section`
   padding: 10px 0;
@@ -239,6 +240,8 @@ export default function Item() {
       }
     } else if (action === 'change-star') {
       changeItemLike(item.id);
+    } else if (action === 'close') {
+      closeItem(item.id);
     }
   };
 
@@ -299,6 +302,31 @@ export default function Item() {
         dispatch(setLoading(false));
         swalAlert('發生錯誤，請重試一次');
       });
+  };
+
+  const closeItem = (id: number) => {
+    const confirmTxt = item?.isClosed ? '要解除封存嗎?' : '確定要進行封存嗎?';
+    const successTxt = item?.isClosed ? '已解除封存' : '已進行封存';
+
+    confirmAlert(confirmTxt).then(result => {
+      dispatch(setLoading(true));
+
+      if (result.isConfirmed) {
+        toggleCloseItem(id)
+          .then(res => {
+            if (res.status === 'success') {
+              getOriItem().then(() => {
+                dispatch(setLoading(false));
+                toastAlert(successTxt);
+              });
+            }
+          })
+          .catch(() => {
+            dispatch(setLoading(false));
+            swalAlert('發生錯誤，請重試一次');
+          });
+      }
+    });
   };
 
   return (

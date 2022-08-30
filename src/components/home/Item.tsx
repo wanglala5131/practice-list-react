@@ -272,6 +272,7 @@ type Props = {
   setListOpenId?: (value: number) => void;
   changeItemLike?: (id: number, isLike: boolean) => void | undefined;
   addItemToCart?: (id: number) => void | undefined;
+  closeItem: (id: number, name: string) => void | undefined;
 };
 
 export default function Item(props: Props) {
@@ -284,6 +285,7 @@ export default function Item(props: Props) {
     setListOpenId,
     changeItemLike,
     addItemToCart,
+    closeItem,
   } = props;
 
   const changeNavOpenId = (value: number) => {
@@ -357,7 +359,12 @@ export default function Item(props: Props) {
         {itemDisplay === 'list' && !isInClosePage && (
           <CardButton>{item.isLiked ? '移除最愛' : '加入最愛'}</CardButton>
         )}
-        <CardButton className={itemDisplay === 'list' ? '' : 'close'}>
+        <CardButton
+          onClick={() => {
+            closeItem(item.id, item.name);
+          }}
+          className={itemDisplay === 'list' ? '' : 'close'}
+        >
           {isInClosePage ? '解除封存' : '封存'}
         </CardButton>
 

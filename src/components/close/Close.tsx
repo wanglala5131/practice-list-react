@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { ItemType } from 'components/data.type';
 
+import { toastAlert, swalAlert, confirmAlert } from 'helpers/alert';
+import { useAppDispatch } from 'hooks/hooks';
+import { setLoading } from 'actions/loading';
+import { getCloseItems } from 'api/item';
+import { toggleCloseItem } from 'api/item';
+
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/stop.jpeg';
 import ItemsWrapper from 'components/ItemsWrapper';
-
-// fake data
-import { closeItems as OriItems } from 'assets/fake-data/fake';
 
 const pageData = {
   bannerImg,
@@ -24,14 +27,47 @@ const pageData = {
 };
 
 export default function Home() {
+  const dispatch = useAppDispatch();
   const [items, setItems] = useState<ItemType[]>([]);
 
   // 模擬 api
   useEffect(() => {
-    setTimeout(() => {
-      setItems(OriItems);
-    }, 500);
+    getCloseOriItems();
   }, []);
+
+  const getCloseOriItems = () => {
+    return getCloseItems()
+      .then(res => {
+        const { items: OriItems } = res;
+
+        setItems(OriItems);
+      })
+      .catch(() => {
+        swalAlert('發生錯誤，請重試一次');
+      });
+  };
+
+  const closeItem = (id: number, name: string) => {
+    confirmAlert(`確定要解除「${name}」的封存嗎?`).then(result => {
+      dispatch(setLoading(true));
+
+      if (result.isConfirmed) {
+        toggleCloseItem(id)
+          .then(res => {
+            if (res.status === 'success') {
+              getCloseOriItems().then(() => {
+                dispatch(setLoading(false));
+                toastAlert(`已解除「${name}」的封存`);
+              });
+            }
+          })
+          .catch(() => {
+            dispatch(setLoading(false));
+            swalAlert('發生錯誤，請重試一次');
+          });
+      }
+    });
+  };
 
   return (
     <>
@@ -42,7 +78,11 @@ export default function Home() {
         hasCart={true}
       ></Banner>
 
-      <ItemsWrapper isInClosePage={true} itemsList={items} />
+      <ItemsWrapper
+        isInClosePage={true}
+        itemsList={items}
+        closeItem={closeItem}
+      />
     </>
   );
 }

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ItemType, CartItem } from 'components/data.type';
 
-import { toastAlert, swalAlert } from 'helpers/alert';
+import { toastAlert, swalAlert, confirmAlert } from 'helpers/alert';
 import { useAppDispatch } from 'hooks/hooks';
 import { setLoading } from 'actions/loading';
-import { getItems, changeLike } from 'api/item';
+import { getItems, changeLike, toggleCloseItem } from 'api/item';
 import { addToCart, deleteCartItem } from 'api/cart';
 
 import Banner from 'components/Banner';
@@ -134,6 +134,28 @@ export default function Home() {
       });
   };
 
+  const closeItem = (id: number, name: string) => {
+    confirmAlert(`確定要「${name}」進行封存嗎?`).then(result => {
+      dispatch(setLoading(true));
+
+      if (result.isConfirmed) {
+        toggleCloseItem(id)
+          .then(res => {
+            if (res.status === 'success') {
+              getOriItems().then(() => {
+                dispatch(setLoading(false));
+                toastAlert(`已將「${name}」封存`);
+              });
+            }
+          })
+          .catch(() => {
+            dispatch(setLoading(false));
+            swalAlert('發生錯誤，請重試一次');
+          });
+      }
+    });
+  };
+
   return (
     <>
       <Cart cartItems={cartItems} deleteItemInCart={deleteItemInCart} />
@@ -151,6 +173,7 @@ export default function Home() {
         cartItemsArr={cartItemsArr}
         changeItemLike={changeItemLike}
         addItemToCart={addItemToCart}
+        closeItem={closeItem}
       />
     </>
   );
