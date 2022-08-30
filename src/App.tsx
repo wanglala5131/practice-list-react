@@ -14,6 +14,7 @@ import Loading from 'components/Loading';
 
 // router
 import Header from 'components/header/Header';
+import Footer from 'components/Footer';
 import UserCard from 'components/user/UserCard'; // 登入註冊頁面
 import Home from 'components/home/Home';
 import Create from 'components/create/Create';
@@ -115,6 +116,7 @@ function App() {
             <Route path="/how-to-use" element={<HowToUse />} />
           </Routes>
         </div>
+        <Footer />
         {isLoading && <Loading />}
       </ThemeProvider>
     </div>
