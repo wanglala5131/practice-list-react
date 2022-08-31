@@ -357,7 +357,15 @@ export default function Item(props: Props) {
         ${listNavOpenId === item.id ? 'active' : ''}`}
       >
         {itemDisplay === 'list' && !isInClosePage && (
-          <CardButton>{item.isLiked ? '移除最愛' : '加入最愛'}</CardButton>
+          <CardButton
+            onClick={() => {
+              if (changeItemLike) {
+                changeItemLike(item.id, item.isLiked);
+              }
+            }}
+          >
+            {item.isLiked ? '移除最愛' : '加入最愛'}
+          </CardButton>
         )}
         <CardButton
           onClick={() => {

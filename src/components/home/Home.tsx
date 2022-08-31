@@ -136,9 +136,8 @@ export default function Home() {
 
   const closeItem = (id: number, name: string) => {
     confirmAlert(`確定要「${name}」進行封存嗎?`).then(result => {
-      dispatch(setLoading(true));
-
       if (result.isConfirmed) {
+        dispatch(setLoading(true));
         toggleCloseItem(id)
           .then(res => {
             if (res.status === 'success') {
