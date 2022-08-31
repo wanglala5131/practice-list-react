@@ -71,3 +71,5 @@ export interface putCategoryRes {
   message?: string;
   putCategory: CategoriesType;
 }
+
+export interface GetCartRes extends Array<CartItem> {}

@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactSortable } from 'react-sortablejs';
 import { pad, buttonStyle, inputStyle } from 'components/variables';
+
+import { toastAlert, swalAlert, confirmAlert } from 'helpers/alert';
+import { useAppDispatch } from 'hooks/hooks';
+import { setLoading } from 'actions/loading';
 import { CartItem, ItemType } from 'components/data.type';
+import { getCart, saveCart, deleteCartItem, submitCartItems } from 'api/cart';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/cart-page.jpeg';
@@ -11,10 +16,7 @@ import ListItem from './ListItem';
 import AddItemModal from 'components/listItems/AddItemModal';
 
 // fake data
-import {
-  cartItems as oriCartItems,
-  lists as oriLists,
-} from 'assets/fake-data/fake';
+import { item, items, lists as oriLists } from 'assets/fake-data/fake';
 
 const Container = styled.div`
   margin: 0 auto 80px auto;
@@ -82,13 +84,25 @@ const ListButtons = styled.div`
   }
 `;
 
+const ListNoteTxt = styled.p`
+  margin-top: 10px;
+  color: ${props => props.theme.red};
+  font-size: 16px;
+
+  @media ${pad} {
+    font-size: 20px;
+  }
+`;
+
 type Props = {
   isCart: boolean;
 };
 
 export default function ListItems(props: Props) {
+  const dispatch = useAppDispatch();
   const { isCart } = props;
 
+  const navigate = useNavigate();
   const location = useLocation();
   const { pathname } = location;
 
@@ -110,41 +124,77 @@ export default function ListItems(props: Props) {
     setListItemsArr([]);
     setListName('');
 
-    setTimeout(() => {
-      // list items 轉換成 CartItem 的形式
-      let item = isCart
-        ? oriCartItems
-        : oriLists[1].Items.map(item => ({
-            id: item.id,
-            Item: item,
-            itemId: item.id,
-            reps: item.ListItem.reps,
-            sort: item.ListItem.sort,
-            remark: item.ListItem.remark,
-          }));
+    getListItems();
 
-      setListItems(item);
-      setListItemsArr(item.map(item => item.id));
-
-      if (!isCart) {
-        setListName(oriLists[1].name);
-      } else {
-        setListName(localStorage.getItem('cartName') || '');
-      }
-    }, 1000);
+    if (!isCart) {
+      setListName(oriLists[1].name);
+    } else {
+      setListName(localStorage.getItem('cartName') || '');
+    }
   }, [pathname]);
 
-  const submit = () => {
-    const sortListtItem = listItems.map((item, index) => ({
-      ...item,
-      sort: index,
-    }));
+  const getListItems = () => {
+    // TODO: 編輯時做區分
+    return getCart()
+      .then(res => {
+        setListItems(res);
+        setListItemsArr(res.map(item => item.id));
+      })
+      .catch(() => {
+        swalAlert('發生錯誤，請重試一次');
+      });
 
-    console.log(listName);
-    console.log(sortListtItem);
+    // TODO: list items 轉換成 CartItem 的形式
+    // let item = isCart
+    //   ? res
+    //   : oriLists[1].Items.map(item => ({
+    //       id: item.id,
+    //       Item: item,
+    //       itemId: item.id,
+    //       reps: item.ListItem.reps,
+    //       sort: item.ListItem.sort,
+    //       remark: item.ListItem.remark,
+    //     }));
   };
 
-  const saveCart = () => {
+  // 加上排序
+  const sortItems = (items: CartItem[]) => {
+    return items.map((item, index) => ({
+      sort: index,
+      ItemId: item.Item.id,
+      reps: item.reps,
+      remark: item.remark,
+    }));
+  };
+
+  const submit = () => {
+    if (listItems.length < 3) {
+      swalAlert('請至少選擇三個項目');
+      return;
+    }
+
+    if (!listName) {
+      swalAlert('請填入菜單名稱');
+      return;
+    }
+
+    const sortListtItems = sortItems(listItems);
+
+    // TODO: 建立菜單導轉後，看新的有沒有出來
+    submitCartItems({ updateItems: sortListtItems, listName })
+      .then(res => {
+        if (res.status === 'success') {
+          localStorage.removeItem('cartName');
+          toastAlert('成功建立菜單');
+          navigate('/lists');
+        }
+      })
+      .catch(() => {
+        swalAlert('發生錯誤，請重試一次');
+      });
+  };
+
+  const save = () => {
     if (isCart) {
       if (listName) {
         localStorage.setItem('cartName', listName);
@@ -152,7 +202,21 @@ export default function ListItems(props: Props) {
         localStorage.removeItem('cartName');
       }
     }
-    // TODO: 發api儲存暫定菜單
+
+    dispatch(setLoading(true));
+    const sortListtItems = sortItems(listItems);
+    saveCart({ updateItems: sortListtItems })
+      .then(res => {
+        if (res.status === 'success') {
+          toastAlert('儲存成功');
+        }
+      })
+      .catch(() => {
+        swalAlert('發生錯誤，請重試一次');
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
   };
 
   const changeValue = (
@@ -191,17 +255,54 @@ export default function ListItems(props: Props) {
       setItempAddItemIds([...tempAddItemIds, item.id]);
     }
   };
-  const deleteItem = (id: number) => {
-    if (tempAddItemIds.includes(id)) {
-      setListItemsArr(prevVar => {
-        return prevVar.filter(item => item !== id);
-      });
-      setListItems(prevVar => {
-        return prevVar.filter(item => item.id !== id);
-      });
+  const deleteItem = (id: number, name: string) => {
+    confirmAlert(`確定要刪除「${name}」嗎?`).then(result => {
+      if (result.isConfirmed) {
+        if (isCart) {
+          deleteInCart(id);
+        } else {
+          console.log(id);
+          // TODO: listItems method
+          // if (tempAddItemIds.includes(id)) {
+          //   setListItemsArr(prevVar => {
+          //     return prevVar.filter(item => item !== id);
+          //   });
+          //   setListItems(prevVar => {
+          //     return prevVar.filter(item => item.id !== id);
+          //   });
 
+          //   return;
+          // }
+        }
+      }
+    });
+  };
+
+  const deleteInCart = (id: number) => {
+    const deleteCartItemId = listItems.find(
+      cartItem => cartItem.Item.id === id
+    )?.id;
+
+    if (!deleteCartItemId) {
+      swalAlert('發生錯誤，請重新整理');
       return;
     }
+
+    dispatch(setLoading(true));
+    deleteCartItem(deleteCartItemId)
+      .then(res => {
+        if (res.status === 'success') {
+          getListItems().then(() => {
+            toastAlert('刪除成功');
+          });
+        }
+      })
+      .catch(() => {
+        swalAlert('發生錯誤，請重試一次');
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
   };
 
   return (
@@ -241,9 +342,13 @@ export default function ListItems(props: Props) {
           ))}
         </ReactSortable>
 
+        {listItems.length < 3 && (
+          <ListNoteTxt>至少三個項目才可送出表單</ListNoteTxt>
+        )}
+
         <ListButtons>
           {isCart && (
-            <button className="default" onClick={saveCart}>
+            <button className="default" onClick={save}>
               儲存資料
             </button>
           )}
@@ -253,7 +358,11 @@ export default function ListItems(props: Props) {
             </button>
           )}
 
-          <button className="submit" onClick={submit}>
+          <button
+            className="submit"
+            disabled={listItems.length < 3 || !listName}
+            onClick={submit}
+          >
             {isCart ? '送出' : '儲存'}
           </button>
         </ListButtons>

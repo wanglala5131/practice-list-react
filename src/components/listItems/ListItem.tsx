@@ -139,7 +139,7 @@ const ListItemFooter = styled.div`
 type Props = {
   item: CartItem;
   changeValue: (id: number, type: 'reps' | 'remark', value: string) => void;
-  deleteItem: (value: number) => void;
+  deleteItem: (id: number, name: string) => void;
 };
 
 export default function ListItem(props: Props) {
@@ -162,7 +162,9 @@ export default function ListItem(props: Props) {
           </Subcategories>
         </ItemContent>
 
-        <ItemButton onClick={() => deleteItem(item.id)}>&times;</ItemButton>
+        <ItemButton onClick={() => deleteItem(item.Item.id, item.Item.name)}>
+          &times;
+        </ItemButton>
       </ListItemHeader>
 
       <input type="checkbox" id={`list-${item.id}`} />

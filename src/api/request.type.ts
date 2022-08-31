@@ -9,3 +9,17 @@ export interface RegisterReq {
   password: string | number;
   confirmPassword: string | number;
 }
+
+// save cart and put listItem
+export interface ListItemsReq {
+  updateItems: {
+    ItemId: number;
+    reps: string;
+    remark: string;
+    sort: number;
+  }[];
+}
+
+export interface SubmitCartReq extends ListItemsReq {
+  listName: string;
+}
