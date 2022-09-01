@@ -4,6 +4,7 @@ import {
   CartItem,
   CategoriesType,
   SubCategoriesType,
+  ListType,
 } from 'components/data.type';
 
 export interface AxiosResponseCustom<T = any> {
@@ -73,3 +74,5 @@ export interface PutCategoryRes {
 }
 
 export interface GetCartRes extends Array<CartItem> {}
+
+export interface GetListsRes extends Array<ListType> {}

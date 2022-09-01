@@ -91,7 +91,7 @@ export default function ItemsWrapper(props: Props) {
   return (
     <div className={`container ${itemDisplay === 'list' ? 'smaller' : ''}`}>
       <CardsNumTxt className="cards-num">
-        共有 {itemsList.length} 個結果
+        - 共有 {itemsList.length} 個結果 -
       </CardsNumTxt>
       <CardsWrapper className={itemDisplay}>
         <IconArea>

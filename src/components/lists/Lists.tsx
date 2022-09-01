@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { pad, inputStyle, buttonStyle } from 'components/variables';
+
+import { swalAlert, toastAlert, confirmAlert } from 'helpers/alert';
+import { useAppDispatch } from 'hooks/hooks';
+import { setLoading } from 'actions/loading';
+import { getLists, changeListStatus, deleteList } from 'api/list';
 import { ListType } from 'components/data.type';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/lists-page.jpeg';
 import ListDisplay from 'components/lists/ListDIsplay';
-
-// fake
-import { lists as oriList } from 'assets/fake-data/fake';
 
 const Search = styled.div`
   width: 100%;
@@ -270,10 +272,15 @@ type displayShowType = {
 };
 
 export default function Lists() {
+  const dispatch = useAppDispatch();
+  const [searchParams, setSearchParams] = useSearchParams({});
+  const queryIsUsed = searchParams.get('isUsed');
+
   const [pageButtons, setPageButtons] = useState(pageData.buttons);
-  const [isUsed, setIsUsed] = useState<boolean>(false);
+  const [isUsed, setIsUsed] = useState<boolean>(queryIsUsed === 'true');
   const [lists, setList] = useState<ListType[]>([]);
   const [keyword, setKeyword] = useState<string>('');
+  const [filterLists, setFilterLists] = useState<ListType[]>([]);
 
   // display setting
   const [displayShow, setDisplayShow] = useState<displayShowType>({
@@ -290,14 +297,12 @@ export default function Lists() {
     }
   };
 
-  // api
   useEffect(() => {
-    setTimeout(() => {
-      setList(oriList);
-    }, 1000);
-  }, []);
+    getListsData();
+    setSearchParams({
+      isUsed: String(isUsed),
+    });
 
-  useEffect(() => {
     const activeButton = isUsed ? 'list-close' : 'list';
     setPageButtons(
       pageData.buttons.map(button => ({
@@ -307,9 +312,66 @@ export default function Lists() {
     );
   }, [isUsed]);
 
+  const getListsData = () => {
+    return getLists({ isUsed })
+      .then(res => {
+        setList(res);
+        setFilterLists(res);
+      })
+      .catch(() => {
+        swalAlert('發生錯誤，請重試一次');
+      });
+  };
+
   useEffect(() => {
-    console.log(keyword);
+    setFilterLists(lists.filter(list => list.name.includes(keyword)));
   }, [keyword]);
+
+  const changeStauts = (id: number, name: string) => {
+    confirmAlert(
+      isUsed ? `確定要退回「${name}」` : `確定要將「${name}」標示為已使用`
+    ).then(result => {
+      if (result.isConfirmed) {
+        dispatch(setLoading(true));
+        changeListStatus(id)
+          .then(res => {
+            if (res.status === 'success') {
+              getListsData().then(() => {
+                toastAlert(isUsed ? '已將此菜單退回' : '已標示為已使用');
+              });
+            }
+          })
+          .catch(() => {
+            swalAlert('發生錯誤，請重試一次');
+          })
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
+      }
+    });
+  };
+
+  const listDelete = (id: number, name: string) => {
+    confirmAlert(`確定要刪除「${name}」`).then(result => {
+      if (result.isConfirmed) {
+        dispatch(setLoading(true));
+        deleteList(id)
+          .then(res => {
+            if (res.status === 'success') {
+              getListsData().then(() => {
+                toastAlert('已將此菜單刪除');
+              });
+            }
+          })
+          .catch(() => {
+            swalAlert('發生錯誤，請重試一次');
+          })
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
+      }
+    });
+  };
 
   return (
     <>
@@ -328,24 +390,35 @@ export default function Lists() {
           <label>搜尋關鍵字：</label>
           <input
             type="text"
-            placeholder="11/12、暖身"
+            placeholder=""
             onChange={e => setKeyword(e.target.value)}
           />
         </Search>
 
         <ListsContainer>
           <Title>{isUsed ? '已使用的表單' : '未使用的表單'}</Title>
-          <ResultTxt>共 {lists.length} 個結果</ResultTxt>
+          <ResultTxt>- 共 {filterLists.length} 個結果 -</ResultTxt>
 
-          {lists.map(list => (
+          {filterLists.map(list => (
             <List key={list.id}>
               <input id={`list-${list.id}`} type="checkbox" />
               <ListHeader htmlFor={`list-${list.id}`}>
                 <p>{list.name}</p>
                 <div className="buttons">
-                  <button>刪除</button>
+                  <button
+                    onClick={() => {
+                      listDelete(list.id, list.name);
+                    }}
+                  >
+                    刪除
+                  </button>
                   <Link to={`/lists/${list.id}`}>編輯</Link>
-                  <button className={isUsed ? 'return' : 'done'}>
+                  <button
+                    onClick={() => {
+                      changeStauts(list.id, list.name);
+                    }}
+                    className={isUsed ? 'return' : 'done'}
+                  >
                     {isUsed ? '退回' : '標示已使用'}
                   </button>
                 </div>
