@@ -18,7 +18,7 @@ export default function Footer() {
   return (
     <FooterWrapper>
       <p>個人練習作品，歡迎使用 ：）</p>
-      <p>如需聯絡作者，請寄 sue4100035045@gmail.com </p>
+      <p>如需聯絡作者，請寄信至 sue4100035045@gmail.com </p>
     </FooterWrapper>
   );
 }
