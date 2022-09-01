@@ -3,8 +3,8 @@ import {
   AxiosResponseCustom,
   GetCategoriesRes,
   GetSubcategoriesRes,
-  addCategoryRes,
-  putCategoryRes,
+  AddCategoryRes,
+  PutCategoryRes,
   OnlyStatusRes,
 } from './response.type';
 
@@ -27,7 +27,7 @@ export const addCategory = (data: { name: string }) => {
     url: `/setting/categories`,
     method: 'post',
     data,
-  }).then((res: AxiosResponseCustom<addCategoryRes>) => res.data);
+  }).then((res: AxiosResponseCustom<AddCategoryRes>) => res.data);
 };
 
 export const addSubcategory = (data: { name: string; CategoryId: number }) => {
@@ -57,7 +57,7 @@ export const putCategory = (id: number, data: { name: string }) => {
     url: `/setting/categories/${id}`,
     method: 'put',
     data,
-  }).then((res: AxiosResponseCustom<putCategoryRes>) => res.data);
+  }).then((res: AxiosResponseCustom<PutCategoryRes>) => res.data);
 };
 
 export const putSubcategory = (

@@ -50,7 +50,7 @@ export interface GetSubcategoriesRes {
 
 export interface GetCategoriesRes extends Array<CategoriesType> {}
 
-export interface addCategoryRes {
+export interface AddCategoryRes {
   UserId: number;
   createdAt: string;
   id: number;
@@ -66,7 +66,7 @@ export interface GetItemRes {
   message?: string;
 }
 
-export interface putCategoryRes {
+export interface PutCategoryRes {
   status: string;
   message?: string;
   putCategory: CategoriesType;
