@@ -76,3 +76,5 @@ export interface PutCategoryRes {
 export interface GetCartRes extends Array<CartItem> {}
 
 export interface GetListsRes extends Array<ListType> {}
+
+export interface GetListRes extends ListType {}

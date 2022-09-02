@@ -7,6 +7,9 @@ import { ItemType } from 'components/data.type';
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
+import { swalAlert } from 'helpers/alert';
+import { getItems } from 'api/item';
+
 import SearchBar from 'components/home/SearchBar';
 
 // fake data
@@ -130,10 +133,16 @@ export default function AddItemModal(props: Props) {
   const [currentShowItems, setCurrentShowItems] = useState<ItemType[]>([]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setItems(OriItems);
-      setCurrentShowItems(OriItems);
-    }, 1000);
+    getItems()
+      .then(res => {
+        const { items: OriItems } = res;
+
+        setItems(OriItems);
+        setCurrentShowItems(OriItems);
+      })
+      .catch(() => {
+        swalAlert('發生錯誤，請重試一次');
+      });
   }, []);
 
   const customStyles = {
