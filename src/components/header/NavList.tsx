@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { pad } from 'components/variables';
 
 import { useAppDispatch } from 'hooks/hooks';
@@ -9,22 +9,27 @@ const navList = [
   {
     path: '/',
     name: '訓練項目',
+    activePath: /^\/$|^\/close$|^\/create$|^\/[\d+]$|^\/edit\/[\d+]$/,
   },
   {
     path: '/cart',
     name: '暫定菜單',
+    activePath: /^\/cart$/,
   },
   {
     path: '/lists',
     name: '已排菜單',
+    activePath: /^\/lists$|^\/lists\/[\d+]$/,
   },
   {
     path: '/setting/subcategory',
     name: '類別設定',
+    activePath: /^\/setting\/subcategory$|^\/setting\/category$/,
   },
   {
     path: '/how-to-use',
     name: '使用說明',
+    activePath: /^\/how-to-use$/,
   },
 ];
 
@@ -145,6 +150,7 @@ export default function NavList(props: Props) {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const logout = () => {
     dispatch(removeAuth());
@@ -156,7 +162,12 @@ export default function NavList(props: Props) {
     <NavListUl className="nav-list">
       {navList.map(item => (
         <NavItem key={item.path} onClick={clickNav}>
-          <Link to={item.path}> {item.name}</Link>
+          <Link
+            to={item.path}
+            className={item.activePath.test(pathname) ? 'active' : ''}
+          >
+            {item.name}
+          </Link>
         </NavItem>
       ))}
       <NavItem className="logout">
