@@ -1,7 +1,9 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
-// const baseURL = 'https://practice-list.herokuapp.com/api/practice';
-const baseURL = 'http://localhost:4000/api/practice';
+const baseURL = 'https://practice-list.herokuapp.com/api/practice';
+// const baseURL = 'http://localhost:4000/api/practice';
+// const baseURL =
+//   'http://practicelist-env.eba-mwkw8rr6.us-west-2.elasticbeanstalk.com/api/practice';
 
 export const axiosInstance = axios.create({
   baseURL,
