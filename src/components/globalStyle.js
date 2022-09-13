@@ -85,6 +85,7 @@ html, body {
 
 .main-content {
   margin-top: 60px;
+  min-height: calc(100vh - 165px);
 
   @media ${pad} {
     margin-top: 50px;

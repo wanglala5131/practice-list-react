@@ -6,6 +6,7 @@ const FooterWrapper = styled.footer`
   align-items: center;
   justify-content: center;
   width: 100%;
+  height: 65px;
   margin-top: 50px;
   padding: 10px 5px;
   background-color: ${props => props.theme.darkGreen};

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import { pad, scrollStyle } from 'components/variables';
-import { ListAlt } from '@styled-icons/fa-solid';
+import { TableList } from '@styled-icons/fa-solid';
 import { CartItem } from 'components/data.type';
 
 const Contaniner = styled.div`
@@ -54,7 +54,7 @@ const Label = styled.label`
   }
 `;
 
-const ListIcon = styled(ListAlt)`
+const ListIcon = styled(TableList)`
   width: 20px;
   height: 20px;
   color: ${props => props.theme.lightLogoGreen};

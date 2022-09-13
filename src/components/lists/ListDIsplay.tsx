@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { Cog } from '@styled-icons/fa-solid';
+import { BarsProgress } from '@styled-icons/fa-solid';
 import { pad } from 'components/variables';
 
-const CogIconBox = styled.label`
+const BarsProgressIconBox = styled.label`
   z-index: 30;
   position: fixed;
   display: inline-block;
@@ -13,7 +13,7 @@ const CogIconBox = styled.label`
   }
 `;
 
-const CogIcon = styled(Cog)`
+const BarsProgressIcon = styled(BarsProgress)`
   width: 25px;
   height: 25px;
   color: ${props => props.theme.fontGreen};
@@ -185,9 +185,9 @@ export default function ListDisplay(props: Props) {
         htmlFor="open-toggle-switches"
         className="list-display-modal"
       ></Modal>
-      <CogIconBox htmlFor="open-toggle-switches">
-        <CogIcon />
-      </CogIconBox>
+      <BarsProgressIconBox htmlFor="open-toggle-switches">
+        <BarsProgressIcon />
+      </BarsProgressIconBox>
 
       <ToggleSwitchsWrapper className="toggle-switches">
         <Title>請選擇要顯示的內容</Title>

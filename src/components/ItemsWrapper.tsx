@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
-import { List, ThLarge } from '@styled-icons/fa-solid';
+import { List, Grip } from '@styled-icons/fa-solid';
 
 import { ItemType } from 'components/data.type';
 import Item from 'components/home/Item';
@@ -47,7 +47,7 @@ const IconClass = css`
   }
 `;
 
-const ThLargeIcon = styled(ThLarge)`
+const GripIcon = styled(Grip)`
   ${IconClass}
 `;
 
@@ -95,7 +95,7 @@ export default function ItemsWrapper(props: Props) {
       </CardsNumTxt>
       <CardsWrapper className={itemDisplay}>
         <IconArea>
-          <ThLargeIcon
+          <GripIcon
             className={itemDisplay === 'card' ? 'active' : ''}
             title="卡片顯示"
             onClick={() => changeItemDisplay('card')}
