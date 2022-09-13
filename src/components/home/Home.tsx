@@ -6,6 +6,7 @@ import { useAppDispatch } from 'hooks/hooks';
 import { setLoading } from 'actions/loading';
 import { getItems, changeLike, toggleCloseItem } from 'api/item';
 import { addToCart, deleteCartItem } from 'api/cart';
+import { useAppSelector } from 'hooks/hooks';
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/index-page.jpeg';
@@ -38,6 +39,7 @@ const pageData = {
 
 export default function Home() {
   const dispatch = useAppDispatch();
+  const { isLogin } = useAppSelector(state => state.user);
 
   // 原始資料
   const [items, setItems] = useState<ItemType[]>([]);
@@ -46,7 +48,9 @@ export default function Home() {
   const [currentShowItems, setCurrentShowItems] = useState<ItemType[]>([]);
 
   useEffect(() => {
-    getOriItems();
+    if (isLogin) {
+      getOriItems();
+    }
   }, []);
 
   const getOriItems = () => {

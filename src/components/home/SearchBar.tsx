@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { pad } from 'components/variables';
 
 import { getSubcategories } from 'api/setting';
+import { useAppSelector } from 'hooks/hooks';
 
 import {
   CategoriesType,
@@ -173,6 +174,7 @@ type Props = {
 
 export default function searchBar(props: Props) {
   const { oriItems, setCurrentShowItems } = props;
+  const { isLogin } = useAppSelector(state => state.user);
 
   // 原始資料
   const [categories, setCategories] = useState<CategoriesType[]>([]);
@@ -180,11 +182,13 @@ export default function searchBar(props: Props) {
 
   // api
   useEffect(() => {
-    getSubcategories().then(res => {
-      const { categories: OriCate, subcategories: OriSub } = res;
-      setCategories(OriCate);
-      setSubcategories(OriSub);
-    });
+    if (isLogin) {
+      getSubcategories().then(res => {
+        const { categories: OriCate, subcategories: OriSub } = res;
+        setCategories(OriCate);
+        setSubcategories(OriSub);
+      });
+    }
   }, []);
 
   // search bar 顯示的主分類和次分類

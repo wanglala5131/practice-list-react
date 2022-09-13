@@ -143,7 +143,7 @@ export default function Header() {
   return (
     <HeaderArea>
       <Logo onClick={clickNav}>
-        <Link to="/">
+        <Link to={isLogin ? '/' : '/login'}>
           <img src={logo} alt="practice-list-logo" />
         </Link>
       </Logo>
