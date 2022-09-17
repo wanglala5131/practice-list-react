@@ -51,7 +51,7 @@ export default function Home() {
     if (isLogin) {
       getOriItems();
     }
-  }, []);
+  }, [isLogin]);
 
   const getOriItems = () => {
     return getItems()

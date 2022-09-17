@@ -189,7 +189,7 @@ export default function searchBar(props: Props) {
         setSubcategories(OriSub);
       });
     }
-  }, []);
+  }, [isLogin]);
 
   // search bar 顯示的主分類和次分類
   const [currentCate, setCurrentCate] = useState<string>('');
