@@ -43,11 +43,11 @@
 
 ## 環境
 
-- react 18.2.0 -前端框架
-- typescript 4.7.4
-- styled-components 5.3.5 -CSS-In-JS 函式庫
-- styled-icons -icon
+- Seact 18.2.0 -前端框架
+- TypeScript 4.7.4
+- Styled-components 5.3.5 -CSS-In-JS 函式庫
+- Styled-icons -icon
 - SweetAlert -Confirm/Toast 訊息
 - react-sortablejs -拖曳套件
-- formik & yup -表單驗證函式庫
+- Formik & Yup -表單驗證函式庫
 - react-modal -彈窗
