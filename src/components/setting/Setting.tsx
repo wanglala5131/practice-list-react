@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { pad, inputStyle, buttonStyle } from 'components/variables';
 
@@ -19,7 +19,6 @@ import {
 
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/setting-page.jpeg';
-import { string } from 'yup';
 
 const SettingContainer = styled.div`
   width: 100%;
@@ -233,6 +232,7 @@ export default function Setting(props: Props) {
   }, [settingType]);
 
   const getSetting = () => {
+    dispatch(setLoading(true));
     if (settingType === 'subcategory') {
       return getSubcategories()
         .then(res => {
@@ -251,6 +251,9 @@ export default function Setting(props: Props) {
         })
         .catch(() => {
           swalAlert('發生錯誤，請重試一次');
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
         });
     } else {
       return getCategories()
@@ -267,6 +270,9 @@ export default function Setting(props: Props) {
         })
         .catch(() => {
           swalAlert('發生錯誤，請重試一次');
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
         });
     }
   };

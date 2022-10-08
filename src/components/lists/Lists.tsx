@@ -298,6 +298,8 @@ export default function Lists() {
   };
 
   useEffect(() => {
+    setList([]);
+    setFilterLists([]);
     getListsData();
     setSearchParams({
       isUsed: String(isUsed),
@@ -313,6 +315,7 @@ export default function Lists() {
   }, [isUsed]);
 
   const getListsData = () => {
+    dispatch(setLoading(true));
     return getLists({ isUsed })
       .then(res => {
         setList(res);
@@ -320,6 +323,9 @@ export default function Lists() {
       })
       .catch(() => {
         swalAlert('發生錯誤，請重試一次');
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
       });
   };
 
