@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { pad } from 'components/variables';
@@ -13,7 +13,6 @@ import { addToCart, deleteCartItem } from 'api/cart';
 import Cart from 'components/Cart';
 import Banner from 'components/Banner';
 import bannerImg from 'assets/image/item-page.jpeg';
-import { closeItems } from 'assets/fake-data/fake';
 
 const ItemSection = styled.section`
   padding: 10px 0;
@@ -89,8 +88,6 @@ const CloseTxt = styled.p`
   }
 `;
 
-// TODO:星號封存按鈕
-
 export default function Item() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -152,7 +149,7 @@ export default function Item() {
     getOriItem();
   }, []);
 
-  const getOriItem = () => {
+  const getOriItem = useCallback(() => {
     return getItem(Number(itemId))
       .then(res => {
         if (res.status === 'success') {
@@ -173,7 +170,7 @@ export default function Item() {
       .catch(() => {
         swalAlert('發生錯誤，請重試一次');
       });
-  };
+  }, []);
 
   useEffect(() => {
     if (item) {
@@ -265,7 +262,7 @@ export default function Item() {
       });
   };
 
-  const addItemToCart = (id: number) => {
+  const addItemToCart = useCallback((id: number) => {
     dispatch(setLoading(true));
 
     addToCart(id)
@@ -284,9 +281,9 @@ export default function Item() {
         dispatch(setLoading(false));
         swalAlert('發生錯誤，請重試一次');
       });
-  };
+  }, []);
 
-  const deleteItemInCart = (id: number) => {
+  const deleteItemInCart = useCallback((id: number) => {
     dispatch(setLoading(true));
 
     deleteCartItem(id)
@@ -302,16 +299,15 @@ export default function Item() {
         dispatch(setLoading(false));
         swalAlert('發生錯誤，請重試一次');
       });
-  };
+  }, []);
 
   const closeItem = (id: number) => {
     const confirmTxt = item?.isClosed ? '要解除封存嗎?' : '確定要進行封存嗎?';
     const successTxt = item?.isClosed ? '已解除封存' : '已進行封存';
 
     confirmAlert(confirmTxt).then(result => {
-      dispatch(setLoading(true));
-
       if (result.isConfirmed) {
+        dispatch(setLoading(true));
         toggleCloseItem(id)
           .then(res => {
             if (res.status === 'success') {

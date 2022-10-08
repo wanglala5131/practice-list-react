@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { ItemType, CartItem } from 'components/data.type';
 
 import { toastAlert, swalAlert, confirmAlert } from 'helpers/alert';
@@ -53,7 +53,7 @@ export default function Home() {
     }
   }, [isLogin]);
 
-  const getOriItems = () => {
+  const getOriItems = useCallback(() => {
     return getItems()
       .then(res => {
         const {
@@ -70,10 +70,10 @@ export default function Home() {
       .catch(() => {
         swalAlert('發生錯誤，請重試一次');
       });
-  };
+  }, []);
 
   const changeItemLike = (id: number, isLike: boolean) => {
-    const currentLike = !isLike;
+    let currentLike = !isLike;
     dispatch(setLoading(true));
 
     changeLike(id)
@@ -99,7 +99,7 @@ export default function Home() {
       });
   };
 
-  const addItemToCart = (id: number) => {
+  const addItemToCart = useCallback((id: number) => {
     dispatch(setLoading(true));
 
     addToCart(id)
@@ -118,9 +118,9 @@ export default function Home() {
         dispatch(setLoading(false));
         swalAlert('發生錯誤，請重試一次');
       });
-  };
+  }, []);
 
-  const deleteItemInCart = (id: number) => {
+  const deleteItemInCart = useCallback((id: number) => {
     dispatch(setLoading(true));
 
     deleteCartItem(id)
@@ -136,7 +136,7 @@ export default function Home() {
         dispatch(setLoading(false));
         swalAlert('發生錯誤，請重試一次');
       });
-  };
+  }, []);
 
   const closeItem = (id: number, name: string) => {
     confirmAlert(`確定要「${name}」進行封存嗎?`).then(result => {
