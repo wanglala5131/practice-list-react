@@ -12,9 +12,6 @@ import { getItems } from 'api/item';
 
 import SearchBar from 'components/home/SearchBar';
 
-// fake data
-import { items as OriItems } from 'assets/fake-data/fake';
-
 const CloseButton = styled.div`
   position: absolute;
   top: 0;
