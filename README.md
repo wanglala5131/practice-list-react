@@ -41,9 +41,9 @@
 
 ![](https://i.imgur.com/05Fh9Mf.jpg)
 
-## 環境
+## 環境與工具
 
-- Seact 18.2.0 -前端框架
+- React 18.2.0 -前端框架
 - TypeScript 4.7.4
 - Styled-components 5.3.5 -CSS-In-JS 函式庫
 - Styled-icons -icon
